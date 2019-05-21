@@ -3,11 +3,14 @@
   <h1>Welcome to {{ title }}!</h1>
 </div>
 
+<button type="button" (click)="getPhongData()">Edit Phong Data</button>
+
 <div style="width: 50%; display: block; margin: 50px auto">
   <lib-dynamic-form
     [controls]="questions"
     [actions]="actions"
     (submit)="getFormResponse($event)"
+    [asyncData]="data"
   ></lib-dynamic-form>
 
   <p>{{ response | json }}</p>

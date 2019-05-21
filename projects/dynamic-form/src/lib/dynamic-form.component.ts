@@ -1,7 +1,7 @@
 import { FormControlService } from './../services/form-control.service';
 import { FormControlBase } from './../models/FormControlBase';
 import { FormGroup } from '@angular/forms';
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { IAction } from '../interfaces/IAction';
 import { IFormAction } from '../interfaces/IFormAction';
 import { DropdownControl } from '../models/DropdownControl';
@@ -11,9 +11,10 @@ import { DropdownControl } from '../models/DropdownControl';
   templateUrl: './dynamic-form.component.html',
   styleUrls: ['./dynamic-form.component.scss']
 })
-export class DynamicFormComponent implements OnInit {
+export class DynamicFormComponent implements OnInit, OnChanges {
   @Input() controls: FormControlBase<any>[] = [];
   @Input() actions: IFormAction;
+  @Input() asyncData: any;
   @Output() submit = new EventEmitter<any>();
   form: FormGroup;
 
@@ -25,6 +26,12 @@ export class DynamicFormComponent implements OnInit {
 
   ngOnInit() {
     this.form = this.formControlService.toFormGroup(this.controls);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes['asyncData'] && changes['asyncData'].currentValue) {
+      this.updateFormData(changes['asyncData'].currentValue);
+    }
   }
 
   resetForm() {
@@ -60,6 +67,20 @@ export class DynamicFormComponent implements OnInit {
       }
     }
     return formData;
+  }
+
+  /**
+   * Update form data
+   * @param data
+   */
+  updateFormData(data: Object) {
+    console.log('this.form', this.form);
+    Object.keys(data).forEach(name => {
+      console.log('this.form', this.form);
+      if (this.form.get(name)) {
+        this.form.get(name).patchValue(data[name], {onlySelf: true});
+      }
+    });
   }
 
   onSubmit(e) {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import {
   FormControlBase,
   DropdownControl,
@@ -9,7 +9,8 @@ import {
   IValidator,
   ErrorType,
   IAction,
-  IFormAction
+  IFormAction,
+  DynamicFormComponent
 } from 'dynamic-form';
 import { Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { Observable, of } from 'rxjs';
@@ -20,7 +21,8 @@ import { delay } from 'rxjs/operators';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
+
   title = 'ng-dynamic-form';
   questions: FormControlBase<any>[] = [];
 
@@ -37,10 +39,21 @@ export class AppComponent implements OnInit {
 
   response: any;
 
+  data: any;
+
+  @ViewChild(DynamicFormComponent) dynamicForm: DynamicFormComponent;
+
   constructor(private fb: FormBuilder) { }
 
   ngOnInit() {
     this.questions = this.getQuestions();
+  }
+
+  ngAfterViewInit() {
+    console.log('dynamicForm', this.dynamicForm);
+    // this.dynamicForm.updateFormData({
+    //   firstName: 'Updated'
+    // })
   }
 
   getQuestions() {
@@ -54,7 +67,7 @@ export class AppComponent implements OnInit {
           { id: 3, name: 'Good Name', key: 'good', value: 'Good' },
           { id: 4, name: 'Unproven Name', key: 'unproven', value: 'Unproven' }
         ],
-        value: 'test-5',
+        value: '',
         order: 3,
         labelValue: 'key',
         labelName: 'name',
@@ -64,7 +77,7 @@ export class AppComponent implements OnInit {
       new TextboxControl({
         key: 'firstName',
         label: 'First name',
-        value: 'Dong',
+        value: '',
         validators: <IValidator[]>[
           {
             validate: ErrorType.REQUIRED,
@@ -95,7 +108,7 @@ export class AppComponent implements OnInit {
         key: 'description',
         label: 'Description',
         order: 4,
-        value: 'hola',
+        value: '',
         validators: <IValidator[]>[
           {
             validate: ErrorType.MAX_LENGTH,
@@ -109,7 +122,7 @@ export class AppComponent implements OnInit {
         key: 'englishLevel',
         label: 'English Level',
         order: 5,
-        value: [2, 4],
+        value: [],
         options: [
           { id: 1, name: 'Fresher' },
           { id: 2, name: 'Junior' },
@@ -130,7 +143,7 @@ export class AppComponent implements OnInit {
         key: 'sex',
         label: 'Sex',
         order: 6,
-        value: 2,
+        value: '',
         options: [
           { id: 1, text: 'Radio 1' },
           { id: 2, text: 'Radio 2' },
@@ -154,5 +167,17 @@ export class AppComponent implements OnInit {
   getFormResponse(data: any) {
     console.log('data from dyn form', data);
     this.response = data;
+  }
+
+  getPhongData() {
+    this.dynamicForm.updateFormData({
+      firstName: 'Phong',
+      emailAddress: 'phong@gmail'
+    });
+
+    // this.data = {
+    //   firstName: 'Phong',
+    //   emailAddress: 'phong@gmail'
+    // };
   }
 }

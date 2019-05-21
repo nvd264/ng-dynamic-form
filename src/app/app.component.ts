@@ -39,7 +39,6 @@ export class AppComponent implements OnInit {
 
   constructor(private fb: FormBuilder) { }
 
-
   ngOnInit() {
     this.questions = this.getQuestions();
   }

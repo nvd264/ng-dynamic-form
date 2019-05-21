@@ -47,7 +47,7 @@ export class DynamicFormComponent implements OnInit {
         const options = control.options || [];
 
         if(formData[key].length !== options.length) {
-          throw Error(`Checkboxes and options doesn't not equal.`);
+          throw Error(`Checkboxes and options doesn't equal.`);
         }
         const checkboxesData = [];
         for(let i = 0; i < formData[key].length; i++) {

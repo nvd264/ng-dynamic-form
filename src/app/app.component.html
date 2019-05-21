@@ -1,0 +1,14 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<div style="text-align:center">
+  <h1>Welcome to {{ title }}!</h1>
+</div>
+
+<div style="width: 50%; display: block; margin: 50px auto">
+  <lib-dynamic-form
+    [controls]="questions"
+    [actions]="actions"
+    (submit)="getFormResponse($event)"
+  ></lib-dynamic-form>
+
+  <p>{{ response | json }}</p>
+</div>

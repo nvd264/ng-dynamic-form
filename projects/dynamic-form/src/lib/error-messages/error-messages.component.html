@@ -1,0 +1,23 @@
+<div class="errors">
+  <div *ngIf="errors.required">
+    {{ getErrorMessage(errorTypes.REQUIRED) }}
+  </div>
+  <div *ngIf="errors.min">
+    {{ getErrorMessage(errorTypes.MIN) }}
+  </div>
+  <div *ngIf="errors.max">
+    {{ getErrorMessage(errorTypes.MAX) }}
+  </div>
+  <div *ngIf="errors.minlength">
+    {{ getErrorMessage(errorTypes.MIN_LENGTH) }}
+  </div>
+  <div *ngIf="errors.maxlength">
+    {{ getErrorMessage(errorTypes.MAX_LENGTH) }}
+  </div>
+  <div *ngIf="errors.email">
+    {{ getErrorMessage(errorTypes.EMAIL) }}
+  </div>
+  <div *ngIf="errors.pattern">
+    {{ getErrorMessage(errorTypes.PATTERN) }}
+  </div>
+</div>

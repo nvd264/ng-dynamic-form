@@ -1,0 +1,150 @@
+<div [formGroup]="form" class="container">
+  <!-- Form controls -->
+  <div *ngFor="let control of controls" class="form-row">
+    <div [ngSwitch]="control.controlType">
+      <!-- Text box -->
+      <mat-form-field *ngSwitchCase="'TEXT'">
+        <input
+          matInput
+          [formControlName]="control.key"
+          [id]="control.key"
+          [type]="control['type']"
+          [placeholder]="control.label"
+        />
+        <mat-error
+          *ngIf="form.get(control.key).errors && form.get(control.key).touched"
+        >
+          <error-messages
+            [errors]="form.get(control.key).errors"
+            [validators]="control.validators"
+          ></error-messages>
+        </mat-error>
+      </mat-form-field>
+      <!-- End text box -->
+
+      <!-- Textarea -->
+      <mat-form-field *ngSwitchCase="'TEXTAREA'">
+        <textarea
+          matInput
+          [formControlName]="control.key"
+          [id]="control.key"
+          [placeholder]="control.label"
+        ></textarea>
+        <mat-error
+          *ngIf="form.get(control.key).errors && form.get(control.key).touched"
+        >
+          <error-messages
+            [errors]="form.get(control.key).errors"
+            [validators]="control.validators"
+          ></error-messages>
+        </mat-error>
+      </mat-form-field>
+      <!-- End textarea -->
+
+      <!-- Dropdown -->
+      <mat-form-field *ngSwitchCase="'DROPDOWN'">
+        <mat-select
+          [id]="control.key"
+          [placeholder]="control.label"
+          [formControlName]="control.key"
+        >
+          <mat-option
+            *ngFor="let opt of control['options']"
+            [value]="
+              control['labelValue'] ? opt[control['labelValue']] : opt.value
+            "
+          >
+            {{ control['labelName'] ? opt[control['labelName']] : opt.label }}
+          </mat-option>
+        </mat-select>
+        <mat-error
+          *ngIf="form.get(control.key).errors && form.get(control.key).touched"
+        >
+          <error-messages
+            [errors]="form.get(control.key).errors"
+            [validators]="control.validators"
+          ></error-messages>
+        </mat-error>
+      </mat-form-field>
+      <!-- End dropdown -->
+
+      <!-- Checkbox -->
+      <div *ngSwitchCase="'CHECKBOX'" class="custom-section">
+        <label class="custom-mat-form-field-label">{{ control.label }}</label>
+        <section [formArrayName]="control.key">
+          <mat-checkbox
+            *ngFor="let chk of form.get(control.key)['controls']; let i = index"
+            [formControlName]="i"
+            class="dyn-checkbox"
+          >
+            {{
+              control['labelName']
+                ? control['options'][i][control['labelName']]
+                : control['options'][i].label
+            }}
+          </mat-checkbox>
+        </section>
+        <mat-error
+          *ngIf="form.get(control.key).errors && form.get(control.key).touched"
+        >
+          <error-messages
+            [errors]="form.get(control.key).errors"
+            [validators]="control.validators"
+          ></error-messages>
+        </mat-error>
+      </div>
+      <!-- End checkbox -->
+
+      <!-- Radio -->
+      <div *ngSwitchCase="'RADIO'" class="custom-section">
+        <label class="custom-mat-form-field-label">{{ control.label }}</label>
+        <section>
+          <mat-radio-group
+            class="example-radio-group"
+            [formControlName]="control.key"
+          >
+            <mat-radio-button
+              class="dyn-radio"
+              *ngFor="let opt of control['options']"
+              [value]="
+                control['labelValue'] ? opt[control['labelValue']] : opt.value
+              "
+            >
+              {{ control['labelName'] ? opt[control['labelName']] : opt.label }}
+            </mat-radio-button>
+          </mat-radio-group>
+        </section>
+        <mat-error
+          *ngIf="form.get(control.key).errors && form.get(control.key).touched"
+        >
+          <error-messages
+            [errors]="form.get(control.key).errors"
+            [validators]="control.validators"
+          ></error-messages>
+        </mat-error>
+      </div>
+      <!-- End radio -->
+    </div>
+  </div>
+  <!-- End form controls -->
+
+  <!-- Actions -->
+  <div class="button-row">
+    <button
+      mat-raised-button
+      [color]="actions?.submit?.color || 'primary'"
+      (click)="onSubmit($event)"
+    >
+      {{ actions?.submit?.label || 'Submit' }}
+    </button>
+
+    <button
+      mat-raised-button
+      [color]="actions?.reset?.color || ''"
+      (click)="resetForm()"
+    >
+      {{ actions?.reset?.label || 'Reset' }}
+    </button>
+  </div>
+  <!-- End actions -->
+</div>

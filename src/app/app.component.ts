@@ -204,7 +204,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.dynamicForm.updateFormData({
         firstName: 'Sample First name',
-        emailAddress: 'sample@gmail'
+        emailAddress: 'sample@gmail',
+        englishLevel: [4]
       });
     }, 3000);
 

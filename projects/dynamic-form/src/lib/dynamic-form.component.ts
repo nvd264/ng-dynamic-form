@@ -3,7 +3,8 @@ import { FormControlBase } from './../models/FormControlBase';
 import { FormGroup } from '@angular/forms';
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { IFormAction } from '../interfaces/IFormAction';
-import { DropdownControl } from '../models/DropdownControl';
+import { ControlTypes } from '../enums/control-types.enum';
+import { CheckboxControl } from '../models/CheckboxControl';
 
 @Component({
   selector: 'lib-dynamic-form',
@@ -15,7 +16,10 @@ export class DynamicFormComponent implements OnInit, OnChanges {
   @Input() actions: IFormAction;
   @Input() asyncData: any;
   @Output() submit = new EventEmitter<any>();
+
   form: FormGroup;
+  defaultData: any;
+  controlTypes = ControlTypes;
 
   constructor(private formControlService: FormControlService) { }
 
@@ -25,47 +29,13 @@ export class DynamicFormComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.form = this.formControlService.toFormGroup(this.controls);
+    this.defaultData = this.formControlService.getControlsData(this.controls);
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if(changes['asyncData'] && changes['asyncData'].currentValue) {
+    if (changes['asyncData'] && changes['asyncData'].currentValue) {
       this.updateFormData(changes['asyncData'].currentValue);
     }
-  }
-
-  resetForm() {
-    this.form.reset();
-  }
-
-  /**
-   * Get selected checkboxes data
-   * @param formData
-   */
-  private getSelectedCheckboxesData(formData: any) {
-    let checkboxControls = this.controls.filter(c => c.controlType === 'CHECKBOX');
-    if(checkboxControls.length) {
-      for(let key in formData) {
-        const control = <DropdownControl>checkboxControls.find(c => c.key === key);
-        if(!control) {
-          continue;
-        }
-
-        const options = control.options || [];
-
-        if(formData[key].length !== options.length) {
-          throw Error(`Checkboxes and options doesn't equal.`);
-        }
-        const checkboxesData = [];
-        for(let i = 0; i < formData[key].length; i++) {
-          if(formData[key][i] === true) {
-            checkboxesData.push(options[i]);
-          }
-        }
-
-        formData[key] = checkboxesData;
-      }
-    }
-    return formData;
   }
 
   /**
@@ -73,11 +43,20 @@ export class DynamicFormComponent implements OnInit, OnChanges {
    * @param data
    */
   updateFormData(data: Object) {
-    console.log('this.form', this.form);
     Object.keys(data).forEach(name => {
-      console.log('this.form', this.form);
+      const checkboxControl = this.controls.find(c => c.key === name && c.controlType === ControlTypes.CHECKBOX);
+      let value;
+      if (checkboxControl) {
+        value = this.formControlService
+                      .convertCheckboxesToFormData(
+                        data[name], <CheckboxControl>checkboxControl
+                      );
+      } else {
+        value = data[name];
+      }
+
       if (this.form.get(name)) {
-        this.form.get(name).patchValue(data[name], {onlySelf: true});
+        this.form.get(name).patchValue(value, { onlySelf: true });
       }
     });
   }
@@ -89,8 +68,17 @@ export class DynamicFormComponent implements OnInit, OnChanges {
       return false;
     }
 
-    let formData = {...this.form.value};
-    formData = this.getSelectedCheckboxesData(formData);
+    let formData = { ...this.form.value };
+    formData = this.formControlService.getSelectedCheckboxesData(formData, this.controls);
     this.submit.emit(formData);
+  }
+
+  resetForm(e) {
+    e.preventDefault();
+    if (this.defaultData) {
+      this.updateFormData(this.defaultData);
+      return true;
+    }
+    return this.form.reset();
   }
 }

@@ -32,7 +32,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       color: 'primary'
     },
     reset: {
-      label: 'Reset data',
+      label: 'Reset',
       color: ''
     }
   }
@@ -66,17 +66,18 @@ export class AppComponent implements OnInit, AfterViewInit {
           { id: 3, name: 'Good Name', key: 'good', value: 'Good' },
           { id: 4, name: 'Unproven Name', key: 'unproven', value: 'Unproven' }
         ],
-        value: '',
+        value: 'solid',
         order: 3,
         labelValue: 'key',
         labelName: 'name',
-        asyncData: this.getAsyncData()
+        asyncData: this.getAsyncData(),
+        multiple: true
       }),
 
       new TextboxControl({
         key: 'firstName',
         label: 'First name',
-        value: '',
+        value: 'default first name',
         validators: [
           {
             validate: ErrorTypes.REQUIRED,
@@ -101,13 +102,14 @@ export class AppComponent implements OnInit, AfterViewInit {
             message: 'Email not valid'
           }
         ],
+        value: 'default.email@mail.com'
       }),
 
       new TextareaControl({
         key: 'description',
         label: 'Description',
         order: 4,
-        value: '',
+        value: 'default description',
         validators: [
           {
             validate: ErrorTypes.REQUIRED,
@@ -130,7 +132,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         key: 'englishLevel',
         label: 'English Level',
         order: 5,
-        value: [],
+        value: [1, 4],
         options: [
           { id: 1, name: 'Fresher' },
           { id: 2, name: 'Junior' },
@@ -152,7 +154,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         key: 'sex',
         label: 'Sex',
         order: 6,
-        value: '',
+        value: 3,
         options: [
           { id: 1, text: 'Radio 1' },
           { id: 2, text: 'Radio 2' },
@@ -187,10 +189,11 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   getAsyncData(): Observable<any[]> {
-    return of([
-      { id: 5, name: 'Test async 5', key: 'test-5', value: 'Test 5' },
-      { id: 6, name: 'Test async 6', key: 'test-6', value: 'Test 6' },
-    ]).pipe(delay(10000));
+    const fakeData = [];
+    for(let i = 0; i < 10; i++) {
+      fakeData.push({ id: i, name: `Test async ${i}`, key: `test-${i}`, value: `Test ${i}`});
+    }
+    return of(fakeData).pipe(delay(5000));
   }
 
   getFormResponse(data: any) {

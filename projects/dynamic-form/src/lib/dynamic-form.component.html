@@ -1,9 +1,9 @@
-<div [formGroup]="form" class="container">
+<form [formGroup]="form" class="container">
   <!-- Form controls -->
   <div *ngFor="let control of controls" class="form-row">
     <div [ngSwitch]="control.controlType">
       <!-- Text box -->
-      <mat-form-field *ngSwitchCase="'TEXT'">
+      <mat-form-field *ngSwitchCase="controlTypes.TEXTBOX">
         <input
           matInput
           [formControlName]="control.key"
@@ -11,6 +11,7 @@
           [type]="control['type']"
           [placeholder]="control.label"
           [required]="control.isRequired"
+          [autocomplete]="control['type'] === 'password'"
         />
         <mat-error
           *ngIf="form.get(control.key).errors && form.get(control.key).touched"
@@ -24,7 +25,7 @@
       <!-- End text box -->
 
       <!-- Textarea -->
-      <mat-form-field *ngSwitchCase="'TEXTAREA'">
+      <mat-form-field *ngSwitchCase="controlTypes.TEXTAREA">
         <textarea
           matInput
           [formControlName]="control.key"
@@ -44,12 +45,13 @@
       <!-- End textarea -->
 
       <!-- Dropdown -->
-      <mat-form-field *ngSwitchCase="'DROPDOWN'">
+      <mat-form-field *ngSwitchCase="controlTypes.DROPDOWN">
         <mat-select
           [id]="control.key"
           [placeholder]="control.label"
           [formControlName]="control.key"
           [required]="control.isRequired"
+          [multiple]="control['multiple']"
         >
           <mat-option
             *ngFor="let opt of control['options']"
@@ -72,7 +74,7 @@
       <!-- End dropdown -->
 
       <!-- Checkbox -->
-      <div *ngSwitchCase="'CHECKBOX'" class="custom-section">
+      <div *ngSwitchCase="controlTypes.CHECKBOX" class="custom-section">
         <label
           class="custom-mat-form-field-label"
           [class.required]="control.isRequired"
@@ -103,7 +105,7 @@
       <!-- End checkbox -->
 
       <!-- Radio -->
-      <div *ngSwitchCase="'RADIO'" class="custom-section">
+      <div *ngSwitchCase="controlTypes.RADIO" class="custom-section">
         <label
           class="custom-mat-form-field-label"
           [class.required]="control.isRequired"
@@ -152,10 +154,11 @@
     <button
       mat-raised-button
       [color]="actions?.reset?.color || ''"
-      (click)="resetForm()"
+      type="button"
+      (click)="resetForm($event)"
     >
       {{ actions?.reset?.label || 'Reset' }}
     </button>
   </div>
   <!-- End actions -->
-</div>
+</form>

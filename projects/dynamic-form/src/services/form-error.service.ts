@@ -1,4 +1,4 @@
-import { ErrorTypes } from './../enums/error-type.enum';
+import { ErrorTypes } from './../enums/error-types.enum';
 import { ValidatorFn, Validators } from '@angular/forms';
 import { Injectable } from '@angular/core';
 import { IValidator } from '../interfaces/IValidator';

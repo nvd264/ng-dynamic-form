@@ -19,4 +19,4 @@ export * from './interfaces/IValidator';
 export * from './interfaces/IFormAction';
 
 // Enums
-export * from './enums/error-type.enum';
+export * from './enums/error-types.enum';

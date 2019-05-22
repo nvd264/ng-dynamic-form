@@ -1,7 +1,8 @@
 import { FormControlBase } from './FormControlBase';
+import { ControlTypes } from '../enums/control-types.enum';
 
 export class CheckboxControl extends FormControlBase<boolean[]> {
-  controlType = 'CHECKBOX';
+  controlType = ControlTypes.CHECKBOX;
   labelValue: string;
   labelName: string;
   options: { value: string; label: string }[] = [];

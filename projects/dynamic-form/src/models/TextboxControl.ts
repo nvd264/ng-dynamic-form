@@ -1,7 +1,8 @@
+import { ControlTypes } from './../enums/control-types.enum';
 import { FormControlBase } from './FormControlBase';
 
 export class TextboxControl extends FormControlBase<string> {
-    controlType = 'TEXT';
+    controlType = ControlTypes.TEXTBOX;
     type: string;
 
     constructor(options = {}) {

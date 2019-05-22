@@ -1,4 +1,4 @@
-import { ErrorTypes } from './../../enums/error-type.enum';
+import { ErrorTypes } from './../../enums/error-types.enum';
 import { FormErrorService } from './../../services/form-error.service';
 import { Component, Input } from '@angular/core';
 import { IValidator } from '../../interfaces/IValidator';

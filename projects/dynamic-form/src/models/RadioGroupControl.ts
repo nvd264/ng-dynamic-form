@@ -1,7 +1,8 @@
 import { FormControlBase } from './FormControlBase';
+import { ControlTypes } from '../enums/control-types.enum';
 
 export class RadioGroupControl extends FormControlBase<string | number> {
-  controlType = 'RADIO';
+  controlType = ControlTypes.RADIO;
   labelValue: string;
   labelName: string;
   options: { value: string; label: string }[] = [];

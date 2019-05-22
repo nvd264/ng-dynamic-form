@@ -1,5 +1,5 @@
 import { IValidator } from '../interfaces/IValidator';
-import { ErrorTypes } from '../enums/error-type.enum';
+import { ErrorTypes } from '../enums/error-types.enum';
 
 export class FormControlBase<T> {
   value: T;

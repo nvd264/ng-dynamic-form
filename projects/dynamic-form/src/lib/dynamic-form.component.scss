@@ -1,6 +1,7 @@
 .container {
   display: flex;
   flex-direction: column;
+  font-family: Roboto,"Helvetica Neue",sans-serif;
 }
 
 .container *:not(button) {
@@ -22,4 +23,15 @@
 
 .dyn-radio {
   margin-bottom: 8px;
+}
+
+.custom-mat-form-field-label {
+  font-size: 12px;
+  &.required {
+    &::after {
+      content: " *";
+      display: inline;
+      color: #f44336;
+    }
+  }
 }

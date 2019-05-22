@@ -10,6 +10,7 @@
           [id]="control.key"
           [type]="control['type']"
           [placeholder]="control.label"
+          [required]="control.isRequired"
         />
         <mat-error
           *ngIf="form.get(control.key).errors && form.get(control.key).touched"
@@ -29,6 +30,7 @@
           [formControlName]="control.key"
           [id]="control.key"
           [placeholder]="control.label"
+          [required]="control.isRequired"
         ></textarea>
         <mat-error
           *ngIf="form.get(control.key).errors && form.get(control.key).touched"
@@ -47,6 +49,7 @@
           [id]="control.key"
           [placeholder]="control.label"
           [formControlName]="control.key"
+          [required]="control.isRequired"
         >
           <mat-option
             *ngFor="let opt of control['options']"
@@ -70,7 +73,11 @@
 
       <!-- Checkbox -->
       <div *ngSwitchCase="'CHECKBOX'" class="custom-section">
-        <label class="custom-mat-form-field-label">{{ control.label }}</label>
+        <label
+          class="custom-mat-form-field-label"
+          [class.required]="control.isRequired"
+          >{{ control.label }}</label
+        >
         <section [formArrayName]="control.key">
           <mat-checkbox
             *ngFor="let chk of form.get(control.key)['controls']; let i = index"
@@ -97,7 +104,11 @@
 
       <!-- Radio -->
       <div *ngSwitchCase="'RADIO'" class="custom-section">
-        <label class="custom-mat-form-field-label">{{ control.label }}</label>
+        <label
+          class="custom-mat-form-field-label"
+          [class.required]="control.isRequired"
+          >{{ control.label }}</label
+        >
         <section>
           <mat-radio-group
             class="example-radio-group"

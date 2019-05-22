@@ -1,4 +1,4 @@
-export enum ErrorType {
+export enum ErrorTypes {
   REQUIRED = 'required',
   MIN = 'min',
   MAX = 'max',

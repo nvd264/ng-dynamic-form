@@ -1,4 +1,4 @@
-import { ErrorType } from './../enums/error-type.enum';
+import { ErrorTypes } from './../enums/error-type.enum';
 import { ValidatorFn, Validators } from '@angular/forms';
 import { Injectable } from '@angular/core';
 import { IValidator } from '../interfaces/IValidator';
@@ -18,27 +18,27 @@ export class FormErrorService {
     const validatorsList = [];
     for(let i = 0; i < validators.length; i++) {
       const validator = validators[i];
-      if(validator.validate === ErrorType.REQUIRED) {
+      if(validator.validate === ErrorTypes.REQUIRED) {
         validatorsList.push(Validators.required);
       }
 
-      if(validator.validate === ErrorType.MIN) {
+      if(validator.validate === ErrorTypes.MIN) {
         validatorsList.push(Validators.min(validator.data));
       }
 
-      if(validator.validate === ErrorType.MAX) {
+      if(validator.validate === ErrorTypes.MAX) {
         validatorsList.push(Validators.max(validator.data));
       }
 
-      if(validator.validate === ErrorType.MIN_LENGTH) {
+      if(validator.validate === ErrorTypes.MIN_LENGTH) {
         validatorsList.push(Validators.minLength(validator.data));
       }
 
-      if(validator.validate === ErrorType.MAX_LENGTH) {
+      if(validator.validate === ErrorTypes.MAX_LENGTH) {
         validatorsList.push(Validators.maxLength(validator.data));
       }
 
-      if(validator.validate === ErrorType.EMAIL) {
+      if(validator.validate === ErrorTypes.EMAIL) {
         validatorsList.push(Validators.email);
       }
     }

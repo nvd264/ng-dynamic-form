@@ -1,5 +1,5 @@
-import { ValidatorFn } from '@angular/forms';
 import { IValidator } from '../interfaces/IValidator';
+import { ErrorTypes } from '../enums/error-type.enum';
 
 export class FormControlBase<T> {
   value: T;
@@ -25,5 +25,9 @@ export class FormControlBase<T> {
     this.validators = options.validators || [];
     this.order = options.order === undefined ? 1 : options.order;
     this.controlType = options.controlType || '';
+  }
+
+  get isRequired() {
+    return this.validators.findIndex(v => v.validate === ErrorTypes.REQUIRED) > -1;
   }
 }

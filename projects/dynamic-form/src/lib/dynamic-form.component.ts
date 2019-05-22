@@ -2,7 +2,6 @@ import { FormControlService } from './../services/form-control.service';
 import { FormControlBase } from './../models/FormControlBase';
 import { FormGroup } from '@angular/forms';
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
-import { IAction } from '../interfaces/IAction';
 import { IFormAction } from '../interfaces/IFormAction';
 import { DropdownControl } from '../models/DropdownControl';
 

@@ -1,4 +1,4 @@
-import { ErrorType } from './../../enums/error-type.enum';
+import { ErrorTypes } from './../../enums/error-type.enum';
 import { FormErrorService } from './../../services/form-error.service';
 import { Component, Input } from '@angular/core';
 import { IValidator } from '../../interfaces/IValidator';
@@ -12,7 +12,7 @@ export class ErrorMessagesComponent {
   @Input() errors: any;
   @Input() validators: IValidator[] = [];
 
-  errorTypes = ErrorType;
+  errorTypes = ErrorTypes;
 
   constructor(private formErrorService: FormErrorService) {}
 

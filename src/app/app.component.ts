@@ -7,7 +7,7 @@ import {
   CheckboxControl,
   RadioGroupControl,
   IValidator,
-  ErrorType,
+  ErrorTypes,
   IAction,
   IFormAction,
   DynamicFormComponent
@@ -50,7 +50,6 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    console.log('dynamicForm', this.dynamicForm);
     // this.dynamicForm.updateFormData({
     //   firstName: 'Updated'
     // })
@@ -78,9 +77,9 @@ export class AppComponent implements OnInit, AfterViewInit {
         key: 'firstName',
         label: 'First name',
         value: '',
-        validators: <IValidator[]>[
+        validators: [
           {
-            validate: ErrorType.REQUIRED,
+            validate: ErrorTypes.REQUIRED,
             message: 'First name is required'
           }
         ],
@@ -92,13 +91,13 @@ export class AppComponent implements OnInit, AfterViewInit {
         label: 'Email',
         type: 'email',
         order: 2,
-        validators: <IValidator[]>[
+        validators: [
           {
-            validate: ErrorType.REQUIRED,
+            validate: ErrorTypes.REQUIRED,
             message: 'Email is required'
           },
           {
-            validate: ErrorType.EMAIL,
+            validate: ErrorTypes.EMAIL,
             message: 'Email not valid'
           }
         ],
@@ -109,11 +108,20 @@ export class AppComponent implements OnInit, AfterViewInit {
         label: 'Description',
         order: 4,
         value: '',
-        validators: <IValidator[]>[
+        validators: [
           {
-            validate: ErrorType.MAX_LENGTH,
-            message: 'Description must greater than 10',
+            validate: ErrorTypes.REQUIRED,
+            message: 'Description is required',
+          },
+          {
+            validate: ErrorTypes.MAX_LENGTH,
+            message: 'Description must less than 10',
             data: 10
+          },
+          {
+            validate: ErrorTypes.MIN_LENGTH,
+            message: 'Description must greater than 2',
+            data: 2
           }
         ]
       }),
@@ -131,9 +139,9 @@ export class AppComponent implements OnInit, AfterViewInit {
         ],
         labelValue: 'id',
         labelName: 'name',
-        validators: <IValidator[]>[
+        validators: [
           {
-            validate: ErrorType.REQUIRED,
+            validate: ErrorTypes.REQUIRED,
             message: 'Checkbox is required.'
           }
         ]
@@ -150,8 +158,28 @@ export class AppComponent implements OnInit, AfterViewInit {
           { id: 3, text: 'Radio 3' },
         ],
         labelValue: 'id',
-        labelName: 'text'
-      })
+        labelName: 'text',
+        validators: [
+          {
+            validate: ErrorTypes.REQUIRED,
+            message: 'Sex is required.'
+          }
+        ]
+      }),
+
+      new TextboxControl({
+        key: 'password',
+        label: 'Password',
+        value: '',
+        validators: [
+          {
+            validate: ErrorTypes.REQUIRED,
+            message: 'First name is required'
+          }
+        ],
+        order: 1,
+        type: 'password'
+      }),
     ];
 
     return questions.sort((a, b) => a.order - b.order);
@@ -165,15 +193,16 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   getFormResponse(data: any) {
-    console.log('data from dyn form', data);
     this.response = data;
   }
 
-  getPhongData() {
-    this.dynamicForm.updateFormData({
-      firstName: 'Phong',
-      emailAddress: 'phong@gmail'
-    });
+  getSampleAsyncData() {
+    setTimeout(() => {
+      this.dynamicForm.updateFormData({
+        firstName: 'Sample First name',
+        emailAddress: 'sample@gmail'
+      });
+    }, 3000);
 
     // this.data = {
     //   firstName: 'Phong',

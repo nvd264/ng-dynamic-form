@@ -3,6 +3,7 @@ import { FormControlBase } from './../models/FormControlBase';
 import { Injectable } from '@angular/core';
 import { FormControl, FormGroup, FormArray, Validators } from '@angular/forms';
 import { minSelectedCheckboxes } from '../validators/min-checkbox.directive';
+import { ErrorTypes } from '../enums/error-type.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -47,9 +48,10 @@ export class FormControlService {
       return new FormControl(checked);
     });
     // set required validate for checkbox
-    const validators = this.formErrorService.getValidatesInstance(control.validators);
-    if (validators.indexOf(Validators.required) !== -1) {
-      return new FormArray(chkControls, minSelectedCheckboxes(1));
+    const validateRequired = this.formErrorService.getValidateByErrorType(control.validators, ErrorTypes.REQUIRED);
+    if (validateRequired) {
+      // set numbers of checked box is required
+      return new FormArray(chkControls, minSelectedCheckboxes(+validateRequired.data || 1));
     }
     return new FormArray(chkControls);
   }

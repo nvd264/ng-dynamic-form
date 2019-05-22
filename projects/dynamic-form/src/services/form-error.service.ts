@@ -56,4 +56,13 @@ export class FormErrorService {
     return validator ? validator.message : '';
   }
 
+  /**
+   * Get validate by error type
+   * @param validators
+   * @param errorType
+   */
+  getValidateByErrorType(validators: IValidator[], errorType: string) {
+    return validators.find(v => v.validate === errorType);
+  }
+
 }

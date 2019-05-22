@@ -142,7 +142,8 @@ export class AppComponent implements OnInit, AfterViewInit {
         validators: [
           {
             validate: ErrorTypes.REQUIRED,
-            message: 'Checkbox is required.'
+            message: 'Checkbox required. (2)',
+            data: 2
           }
         ]
       }),

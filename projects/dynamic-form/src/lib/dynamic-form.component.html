@@ -7,7 +7,6 @@
         <input
           matInput
           [formControlName]="control.key"
-          [id]="control.key"
           [type]="control['type']"
           [placeholder]="control.label"
           [required]="control.isRequired"
@@ -29,7 +28,6 @@
         <textarea
           matInput
           [formControlName]="control.key"
-          [id]="control.key"
           [placeholder]="control.label"
           [required]="control.isRequired"
         ></textarea>
@@ -47,7 +45,6 @@
       <!-- Dropdown -->
       <mat-form-field *ngSwitchCase="controlTypes.DROPDOWN">
         <mat-select
-          [id]="control.key"
           [placeholder]="control.label"
           [formControlName]="control.key"
           [required]="control.isRequired"

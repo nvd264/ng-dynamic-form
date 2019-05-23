@@ -1,6 +1,4 @@
 import { FormControlBase } from './FormControlBase';
-import { take } from 'rxjs/operators';
-import { isObservable } from 'rxjs';
 import { ControlTypes } from '../enums/control-types.enum';
 
 export class DropdownControl extends FormControlBase<any> {
@@ -20,13 +18,6 @@ export class DropdownControl extends FormControlBase<any> {
     if(this.multiple && !Array.isArray(this.value)) {
       // convert value to array for multi select
       this.value = [this.value];
-    }
-
-    // apply async options into dropdown
-    if(isObservable(options['asyncData'])) {
-      options['asyncData'].pipe(take(1)).subscribe(opts => {
-        this.options = opts || this.options;
-      });
     }
   }
 }

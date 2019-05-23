@@ -6,6 +6,8 @@ import { minSelectedCheckboxes } from '../validators/min-checkbox.directive';
 import { ErrorTypes } from '../enums/error-types.enum';
 import { DropdownControl } from '../models/DropdownControl';
 import { CheckboxControl } from '../models/CheckboxControl';
+import { Subject } from 'rxjs';
+import { IUpdateOptions } from '../interfaces/IUpdateOptions';
 
 @Injectable({
   providedIn: 'root'

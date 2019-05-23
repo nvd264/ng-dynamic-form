@@ -1,27 +1,62 @@
+import { DEFAULT_IDENTITY } from './../const';
+import { DropdownControl } from './../models/DropdownControl';
 import { FormControlService } from './../services/form-control.service';
 import { FormControlBase } from './../models/FormControlBase';
 import { FormGroup } from '@angular/forms';
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { IFormAction } from '../interfaces/IFormAction';
 import { ControlTypes } from '../enums/control-types.enum';
 import { CheckboxControl } from '../models/CheckboxControl';
+import { HelperService } from '../services/helper.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'lib-dynamic-form',
   templateUrl: './dynamic-form.component.html',
   styleUrls: ['./dynamic-form.component.scss']
 })
-export class DynamicFormComponent implements OnInit, OnChanges {
+export class DynamicFormComponent implements OnInit {
+  // unique form for service when update data
+  @Input() identity = DEFAULT_IDENTITY;
+
   @Input() controls: FormControlBase<any>[] = [];
   @Input() actions: IFormAction;
-  @Input() asyncData: any;
   @Output() submit = new EventEmitter<any>();
 
   form: FormGroup;
   defaultData: any;
   controlTypes = ControlTypes;
 
-  constructor(private formControlService: FormControlService) { }
+  constructor(private formControlService: FormControlService, private helperService: HelperService) {
+    helperService.updateDrowdownOptions$.pipe(
+      // make sure update correct form on per page
+      filter(value => {
+        if(this.identity === DEFAULT_IDENTITY) {
+          return true;
+        }
+        return value.identity === this.identity;
+      })
+    ).subscribe(optionsData => {
+      this.controls.map(c => {
+        if(c.key === optionsData.controlKey) {
+          (<DropdownControl>c).options = optionsData.options;
+        }
+        return c;
+      })
+    });
+
+    helperService.setFormData$.pipe(
+      // make sure update correct form on per page
+      filter(value => {
+        if(this.identity === DEFAULT_IDENTITY) {
+          return true;
+        }
+        return value.identity === this.identity;
+      })
+    ).subscribe(formData => {
+      this.updateFormData(formData.data);
+    });
+  }
 
   get formControls() {
     return this.form.controls;
@@ -30,12 +65,6 @@ export class DynamicFormComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.form = this.formControlService.toFormGroup(this.controls);
     this.defaultData = this.formControlService.getControlsData(this.controls);
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['asyncData'] && changes['asyncData'].currentValue) {
-      this.updateFormData(changes['asyncData'].currentValue);
-    }
   }
 
   /**

@@ -10,7 +10,8 @@ import {
   ErrorTypes,
   IAction,
   IFormAction,
-  DynamicFormComponent
+  DynamicFormComponent,
+  HelperService
 } from 'dynamic-form';
 import { Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { Observable, of } from 'rxjs';
@@ -25,6 +26,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   title = 'ng-dynamic-form';
   questions: FormControlBase<any>[] = [];
+  cloneQuestions: FormControlBase<any>[] = [];
 
   actions: IFormAction = {
     submit: {
@@ -43,10 +45,12 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   @ViewChild(DynamicFormComponent) dynamicForm: DynamicFormComponent;
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder, private helperService: HelperService) {
+  }
 
   ngOnInit() {
     this.questions = this.getQuestions();
+    this.cloneQuestions = this.getQuestions();
   }
 
   ngAfterViewInit() {
@@ -57,7 +61,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   getQuestions() {
     const questions: FormControlBase<any>[] = [
-      new DropdownControl({
+       new DropdownControl({
         key: 'brave',
         label: 'Bravery Rating',
         options: [
@@ -70,7 +74,6 @@ export class AppComponent implements OnInit, AfterViewInit {
         order: 3,
         labelValue: 'key',
         labelName: 'name',
-        asyncData: this.getAsyncData(),
         multiple: true
       }),
 
@@ -208,10 +211,38 @@ export class AppComponent implements OnInit, AfterViewInit {
         englishLevel: [4]
       });
     }, 3000);
+  }
 
-    // this.data = {
-    //   firstName: 'Phong',
-    //   emailAddress: 'phong@gmail'
-    // };
+  directChangeOptionsFromControl() {
+    const fakeData = [];
+    for(let i = 0; i < 10; i++) {
+      fakeData.push({ id: i, name: `Test async ${i}`, key: `test-${i}`, value: `Test ${i}`});
+    }
+    setTimeout(() => {
+      // this.questions[0]['options'] = fakeData;
+      // console.log(this.questions);
+      const dropdown = <DropdownControl>this.questions.find(q => q.key === 'bravessss');
+      if(dropdown) {
+        dropdown.options = fakeData;
+      }
+    }, 2000);
+  }
+
+  updateOptionsByService() {
+    const fakeData = [];
+    for(let i = 0; i < 10; i++) {
+      fakeData.push({ id: i, name: `Test async ${i}`, key: `test-${i}`, value: `Test ${i}`});
+    }
+    this.helperService.updateDropdownOptions('brave', fakeData);
+  }
+
+  setFormDataFromService() {
+    const data = {
+      firstName: 'Sample First name from service',
+      emailAddress: 'sample-service@gmail',
+      englishLevel: [4, 2]
+    };
+
+    this.helperService.setFormData(data, 'form-1');
   }
 }

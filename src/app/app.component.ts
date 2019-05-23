@@ -61,7 +61,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   getQuestions() {
     const questions: FormControlBase<any>[] = [
-       new DropdownControl({
+      new DropdownControl({
         key: 'brave',
         label: 'Bravery Rating',
         options: [
@@ -193,8 +193,8 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   getAsyncData(): Observable<any[]> {
     const fakeData = [];
-    for(let i = 0; i < 10; i++) {
-      fakeData.push({ id: i, name: `Test async ${i}`, key: `test-${i}`, value: `Test ${i}`});
+    for (let i = 0; i < 10; i++) {
+      fakeData.push({ id: i, name: `Test async ${i}`, key: `test-${i}`, value: `Test ${i}` });
     }
     return of(fakeData).pipe(delay(5000));
   }
@@ -215,14 +215,14 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   directChangeOptionsFromControl() {
     const fakeData = [];
-    for(let i = 0; i < 10; i++) {
-      fakeData.push({ id: i, name: `Test async ${i}`, key: `test-${i}`, value: `Test ${i}`});
+    for (let i = 0; i < 10; i++) {
+      fakeData.push({ id: i, name: `Test async ${i}`, key: `test-${i}`, value: `Test ${i}` });
     }
     setTimeout(() => {
       // this.questions[0]['options'] = fakeData;
       // console.log(this.questions);
       const dropdown = <DropdownControl>this.questions.find(q => q.key === 'bravessss');
-      if(dropdown) {
+      if (dropdown) {
         dropdown.options = fakeData;
       }
     }, 2000);
@@ -230,8 +230,8 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   updateOptionsByService() {
     const fakeData = [];
-    for(let i = 0; i < 10; i++) {
-      fakeData.push({ id: i, name: `Test async ${i}`, key: `test-${i}`, value: `Test ${i}`});
+    for (let i = 0; i < 10; i++) {
+      fakeData.push({ id: i, name: `Test async ${i}`, key: `test-${i}`, value: `Test ${i}` });
     }
     this.helperService.updateDropdownOptions('brave', fakeData);
   }

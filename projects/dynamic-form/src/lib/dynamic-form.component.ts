@@ -3,25 +3,28 @@ import { DropdownControl } from './../models/DropdownControl';
 import { FormControlService } from './../services/form-control.service';
 import { FormControlBase } from './../models/FormControlBase';
 import { FormGroup } from '@angular/forms';
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { IFormAction } from '../interfaces/IFormAction';
 import { ControlTypes } from '../enums/control-types.enum';
 import { CheckboxControl } from '../models/CheckboxControl';
 import { HelperService } from '../services/helper.service';
-import { filter } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'lib-dynamic-form',
   templateUrl: './dynamic-form.component.html',
   styleUrls: ['./dynamic-form.component.scss']
 })
-export class DynamicFormComponent implements OnInit {
+export class DynamicFormComponent implements OnInit, OnDestroy {
   // unique form for service when update data
   @Input() identity = DEFAULT_IDENTITY;
 
   @Input() controls: FormControlBase<any>[] = [];
   @Input() actions: IFormAction;
   @Output() submit = new EventEmitter<any>();
+
+  unsubscribe$ = new Subject<any>();
 
   form: FormGroup;
   defaultData: any;
@@ -30,12 +33,8 @@ export class DynamicFormComponent implements OnInit {
   constructor(private formControlService: FormControlService, private helperService: HelperService) {
     helperService.updateDrowdownOptions$.pipe(
       // make sure update correct form on per page
-      filter(value => {
-        if(this.identity === DEFAULT_IDENTITY) {
-          return true;
-        }
-        return value.identity === this.identity;
-      })
+      filter(value => this.identifyFormInstance(value.identity)),
+      takeUntil(this.unsubscribe$)
     ).subscribe(optionsData => {
       this.controls.map(c => {
         if(c.key === optionsData.controlKey) {
@@ -47,15 +46,16 @@ export class DynamicFormComponent implements OnInit {
 
     helperService.setFormData$.pipe(
       // make sure update correct form on per page
-      filter(value => {
-        if(this.identity === DEFAULT_IDENTITY) {
-          return true;
-        }
-        return value.identity === this.identity;
-      })
+      filter(value => this.identifyFormInstance(value.identity)),
+      takeUntil(this.unsubscribe$)
     ).subscribe(formData => {
       this.updateFormData(formData.data);
     });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   get formControls() {
@@ -88,6 +88,13 @@ export class DynamicFormComponent implements OnInit {
         this.form.get(name).patchValue(value, { onlySelf: true });
       }
     });
+  }
+
+  identifyFormInstance(identity: string): boolean {
+    if(this.identity === DEFAULT_IDENTITY) {
+      return true;
+    }
+    return identity === this.identity;
   }
 
   onSubmit(e) {

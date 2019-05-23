@@ -70,7 +70,7 @@ export class AppComponent implements OnInit, AfterViewInit {
           { id: 3, name: 'Good Name', key: 'good', value: 'Good' },
           { id: 4, name: 'Unproven Name', key: 'unproven', value: 'Unproven' }
         ],
-        value: 'solid',
+        value: [],
         order: 3,
         labelValue: 'key',
         labelName: 'name',
@@ -112,7 +112,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         key: 'description',
         label: 'Description',
         order: 4,
-        value: 'default description',
+        value: 'default',
         validators: [
           {
             validate: ErrorTypes.REQUIRED,
@@ -176,7 +176,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       new TextboxControl({
         key: 'password',
         label: 'Password',
-        value: '',
+        value: '123',
         validators: [
           {
             validate: ErrorTypes.REQUIRED,
@@ -233,6 +233,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     for (let i = 0; i < 10; i++) {
       fakeData.push({ id: i, name: `Test async ${i}`, key: `test-${i}`, value: `Test ${i}` });
     }
+    fakeData.push({ id: 2, name: 'Great Name', key: 'great', value: 'Great' });
+    fakeData.push({ id: 3, name: 'Good Name', key: 'good', value: 'Good' });
     this.helperService.updateDropdownOptions('brave', fakeData);
   }
 

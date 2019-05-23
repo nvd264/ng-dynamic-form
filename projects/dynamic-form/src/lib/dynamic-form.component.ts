@@ -39,6 +39,16 @@ export class DynamicFormComponent implements OnInit, OnDestroy {
       this.controls.map(c => {
         if(c.key === optionsData.controlKey) {
           (<DropdownControl>c).options = optionsData.options;
+                // reset selected data from form
+          const newSelectedOptions = this.resetSelectedOptionsFromFormData(<DropdownControl>c);
+          console.log('optionsData', optionsData);
+          console.log('newSelectedOptions', newSelectedOptions);
+          console.log('update dropdown', {
+            [optionsData.controlKey]: newSelectedOptions
+          });
+          this.updateFormData({
+            [optionsData.controlKey]: newSelectedOptions
+          })
         }
         return c;
       })
@@ -83,9 +93,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy {
       } else {
         value = data[name];
       }
-
+      console.log('value', value);
       if (this.form.get(name)) {
-        this.form.get(name).patchValue(value, { onlySelf: true });
+        this.form.get(name).setValue(value);
       }
     });
   }
@@ -105,6 +115,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy {
     }
 
     let formData = { ...this.form.value };
+    console.log('formData', formData);
     formData = this.formControlService.getSelectedCheckboxesData(formData, this.controls);
     this.submit.emit(formData);
   }
@@ -116,5 +127,25 @@ export class DynamicFormComponent implements OnInit, OnDestroy {
       return true;
     }
     return this.form.reset();
+  }
+
+  /**
+   * Reset Selected Options From Form Data
+   * @param control
+   */
+  resetSelectedOptionsFromFormData(control: DropdownControl) {
+    let formData = { ...this.form.value };
+    formData = this.formControlService.getSelectedCheckboxesData(formData, this.controls);
+    const selectedOptions = formData[control.key];
+
+    const newSelectedOptions = [];
+    control.options.map(opt => {
+      if(selectedOptions.indexOf(opt[control.labelValue]) > -1) {
+        // option exist on new list
+        newSelectedOptions.push(opt[control.labelValue]);
+      }
+    });
+
+    return newSelectedOptions;
   }
 }

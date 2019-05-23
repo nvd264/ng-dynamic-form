@@ -134,14 +134,23 @@ export class DynamicFormComponent implements OnInit, OnDestroy {
     return newSelectedOptions;
   }
 
+  /**
+   * Filter options
+   * @param searchText
+   * @param control
+   */
   filterOptions(searchText: string, control: DropdownControl) {
-    control.options.map(opt => {
-      if(opt[control.labelName].toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
-        opt['hidden'] = false;
-      } else {
-        opt['hidden'] = true;
-      }
-    });
+    if(control.searchOnServer) {
+      control.onSearch(searchText);
+    } else {
+      control.options.map(opt => {
+        if(opt[control.labelName].toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
+          opt['hidden'] = false;
+        } else {
+          opt['hidden'] = true;
+        }
+      });
+    }
   }
 
   /**

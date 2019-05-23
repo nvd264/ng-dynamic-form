@@ -1,13 +1,12 @@
 import { FormErrorService } from './form-error.service';
 import { FormControlBase } from './../models/FormControlBase';
 import { Injectable } from '@angular/core';
-import { FormControl, FormGroup, FormArray, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormArray } from '@angular/forms';
 import { minSelectedCheckboxes } from '../validators/min-checkbox.directive';
 import { ErrorTypes } from '../enums/error-types.enum';
 import { DropdownControl } from '../models/DropdownControl';
 import { CheckboxControl } from '../models/CheckboxControl';
-import { Subject } from 'rxjs';
-import { IUpdateOptions } from '../interfaces/IUpdateOptions';
+import { ControlTypes } from '../enums/control-types.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +23,7 @@ export class FormControlService {
     const group: any = {};
 
     controls.forEach(c => {
-      if (c.controlType === 'CHECKBOX') {
+      if (c.controlType === ControlTypes.CHECKBOX) {
         group[c.key] = this.generateCheckboxes(c);
       } else {
         const validators = this.formErrorService.getValidatesInstance(c.validators);
@@ -92,7 +91,7 @@ export class FormControlService {
    * @param formData
    */
   getSelectedCheckboxesData(formData: any, controls: FormControlBase<any>[]) {
-    let checkboxControls = controls.filter(c => c.controlType === 'CHECKBOX');
+    let checkboxControls = controls.filter(c => c.controlType === ControlTypes.CHECKBOX);
     if (checkboxControls.length) {
       for (let key in formData) {
         const control = <DropdownControl>checkboxControls.find(c => c.key === key);

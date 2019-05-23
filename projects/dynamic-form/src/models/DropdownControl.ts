@@ -7,17 +7,24 @@ export class DropdownControl extends FormControlBase<any> {
   labelName: string;
   options: { value: string; label: string }[] = [];
   multiple = false;
+  onSearch: any;
+  searchOnServer = false;
 
   constructor(options = {}) {
     super(options);
     this.options = options['options'] || [];
     this.labelValue = options['labelValue'] || '';
     this.labelName = options['labelName'] || '';
-    this.multiple = !!options['multiple'] || false;
+    this.multiple = !!options['multiple'];
 
     if(this.multiple && !Array.isArray(this.value)) {
       // convert value to array for multi select
       this.value = [this.value];
+    }
+
+    if(typeof options['onSearch'] === 'function') {
+      this.onSearch =  options['onSearch'];
+      this.searchOnServer = true;
     }
   }
 }

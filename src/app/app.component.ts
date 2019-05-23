@@ -76,7 +76,11 @@ export class AppComponent implements OnInit, AfterViewInit {
         order: 3,
         labelValue: 'key',
         labelName: 'name',
-        multiple: true
+        multiple: true,
+        onSearch: (searchText) => {
+          console.log('searchText', searchText);
+          this.helperService.updateDropdownOptions('brave', this.randomOptions());
+        }
       }),
 
       new DropdownControl({
@@ -239,7 +243,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       // this.questions[0]['options'] = fakeData;
       // console.log(this.questions);
-      const dropdown = <DropdownControl>this.questions.find(q => q.key === 'bravessss');
+      const dropdown = <DropdownControl>this.questions.find(q => q.key === 'brave');
       if (dropdown) {
         dropdown.options = fakeData;
       }
@@ -264,5 +268,15 @@ export class AppComponent implements OnInit, AfterViewInit {
     };
 
     this.helperService.setFormData(data);
+  }
+
+  randomOptions() {
+    const limit = Math.floor(Math.random() * (+1 - +100)) + +1;
+    console.log('limit', limit);
+    const fakeData = [];
+    for (let i = 0; i < Math.abs(limit); i++) {
+      fakeData.push({ id: i, name: `Test async ${i}`, key: `test-${i}`, value: `Test ${i}` });
+    }
+    return fakeData;
   }
 }

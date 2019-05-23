@@ -43,6 +43,13 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   data: any;
 
+  braveOptions = [
+    { id: 1, name: 'Solid Name', key: 'solid', value: 'Solid' },
+    { id: 2, name: 'Great Name', key: 'great', value: 'Great' },
+    { id: 3, name: 'Good Name', key: 'good', value: 'Good' },
+    { id: 4, name: 'Unproven Name', key: 'unproven', value: 'Unproven' }
+  ];
+
   @ViewChild(DynamicFormComponent) dynamicForm: DynamicFormComponent;
 
   constructor(private fb: FormBuilder, private helperService: HelperService) {
@@ -64,17 +71,28 @@ export class AppComponent implements OnInit, AfterViewInit {
       new DropdownControl({
         key: 'brave',
         label: 'Bravery Rating',
-        options: [
-          { id: 1, name: 'Solid Name', key: 'solid', value: 'Solid' },
-          { id: 2, name: 'Great Name', key: 'great', value: 'Great' },
-          { id: 3, name: 'Good Name', key: 'good', value: 'Good' },
-          { id: 4, name: 'Unproven Name', key: 'unproven', value: 'Unproven' }
-        ],
+        options: this.braveOptions,
         value: [],
         order: 3,
         labelValue: 'key',
         labelName: 'name',
         multiple: true
+      }),
+
+      new DropdownControl({
+        key: 'brave-2',
+        label: 'Bravery Rating 2',
+        options: [
+          { id: 1, name: 'Solid Name 2', key: 'solid', value: 'Solid' },
+          { id: 2, name: 'Great Name 2', key: 'great', value: 'Great' },
+          { id: 3, name: 'Good Name 2', key: 'good', value: 'Good' },
+          { id: 4, name: 'Unproven Name 2', key: 'unproven', value: 'Unproven' }
+        ],
+        value: [],
+        order: 3,
+        labelValue: 'key',
+        labelName: 'name',
+        multiple: false
       }),
 
       new TextboxControl({
@@ -245,6 +263,6 @@ export class AppComponent implements OnInit, AfterViewInit {
       englishLevel: [4, 2]
     };
 
-    this.helperService.setFormData(data, 'form-1');
+    this.helperService.setFormData(data);
   }
 }

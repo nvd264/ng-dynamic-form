@@ -50,23 +50,26 @@
           [required]="control.isRequired"
           [multiple]="control['multiple']"
         >
-          <mat-option
-            *ngFor="let opt of control['options']"
-            [value]="
-              control['labelValue'] ? opt[control['labelValue']] : opt.value
-            "
-          >
-            {{ control['labelName'] ? opt[control['labelName']] : opt.label }}
+          <mat-option>
+            <ngx-mat-select-search
+              ngModel
+              (ngModelChange)="filterOptions($event, control)"
+              [ngModelOptions]="{ standalone: true }"
+              [placeholderLabel]="'Typing for search...'"
+              [noEntriesFoundLabel]="'No data found'"
+            ></ngx-mat-select-search>
           </mat-option>
+          <ng-container *ngFor="let opt of control['options']">
+            <mat-option
+              *ngIf="!opt['hidden']"
+              [value]="
+                control['labelValue'] ? opt[control['labelValue']] : opt.value
+              "
+            >
+              {{ control['labelName'] ? opt[control['labelName']] : opt.label }}
+            </mat-option>
+          </ng-container>
         </mat-select>
-        <mat-error
-          *ngIf="form.get(control.key).errors && form.get(control.key).touched"
-        >
-          <error-messages
-            [errors]="form.get(control.key).errors"
-            [validators]="control.validators"
-          ></error-messages>
-        </mat-error>
       </mat-form-field>
       <!-- End dropdown -->
 

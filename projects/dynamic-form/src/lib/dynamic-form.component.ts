@@ -27,8 +27,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy {
   unsubscribe$ = new Subject<any>();
 
   form: FormGroup;
-  defaultData: any;
   controlTypes = ControlTypes;
+  originControls: FormControlBase<any>[];
 
   constructor(private formControlService: FormControlService, private helperService: HelperService) {
     helperService.updateDrowdownOptions$.pipe(
@@ -41,11 +41,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy {
           (<DropdownControl>c).options = optionsData.options;
                 // reset selected data from form
           const newSelectedOptions = this.resetSelectedOptionsFromFormData(<DropdownControl>c);
-          console.log('optionsData', optionsData);
-          console.log('newSelectedOptions', newSelectedOptions);
-          console.log('update dropdown', {
-            [optionsData.controlKey]: newSelectedOptions
-          });
           this.updateFormData({
             [optionsData.controlKey]: newSelectedOptions
           })
@@ -73,8 +68,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.originControls = JSON.parse(JSON.stringify(this.controls));
     this.form = this.formControlService.toFormGroup(this.controls);
-    this.defaultData = this.formControlService.getControlsData(this.controls);
   }
 
   /**
@@ -93,13 +88,16 @@ export class DynamicFormComponent implements OnInit, OnDestroy {
       } else {
         value = data[name];
       }
-      console.log('value', value);
       if (this.form.get(name)) {
         this.form.get(name).setValue(value);
       }
     });
   }
 
+  /**
+   * Identify form instance for update data
+   * @param identity
+   */
   identifyFormInstance(identity: string): boolean {
     if(this.identity === DEFAULT_IDENTITY) {
       return true;
@@ -107,26 +105,14 @@ export class DynamicFormComponent implements OnInit, OnDestroy {
     return identity === this.identity;
   }
 
-  onSubmit(e) {
-    e.preventDefault();
-    if (this.form.invalid) {
-      this.formControlService.markFormGroupTouched(this.form);
-      return false;
-    }
-
-    let formData = { ...this.form.value };
-    console.log('formData', formData);
-    formData = this.formControlService.getSelectedCheckboxesData(formData, this.controls);
-    this.submit.emit(formData);
-  }
-
+  /**
+   * Reset form
+   * @param e
+   */
   resetForm(e) {
     e.preventDefault();
-    if (this.defaultData) {
-      this.updateFormData(this.defaultData);
-      return true;
-    }
-    return this.form.reset();
+    this.form = this.formControlService.toFormGroup(this.originControls);
+    this.controls = this.originControls;
   }
 
   /**
@@ -145,7 +131,32 @@ export class DynamicFormComponent implements OnInit, OnDestroy {
         newSelectedOptions.push(opt[control.labelValue]);
       }
     });
-
     return newSelectedOptions;
+  }
+
+  filterOptions(searchText: string, control: DropdownControl) {
+    control.options.map(opt => {
+      if(opt[control.labelName].toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
+        opt['hidden'] = false;
+      } else {
+        opt['hidden'] = true;
+      }
+    });
+  }
+
+  /**
+   * Emit form data to parent
+   * @param e
+   */
+  onSubmit(e) {
+    e.preventDefault();
+    if (this.form.invalid) {
+      this.formControlService.markFormGroupTouched(this.form);
+      return false;
+    }
+
+    let formData = { ...this.form.value };
+    formData = this.formControlService.getSelectedCheckboxesData(formData, this.controls);
+    this.submit.emit(formData);
   }
 }

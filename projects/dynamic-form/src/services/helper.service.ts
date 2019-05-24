@@ -15,6 +15,10 @@ export class HelperService {
 
   constructor() { }
 
+  getDropdownOptions(control) {
+
+  }
+
   /**
    * Update dropdown options
    * @param controlKey

@@ -50,7 +50,7 @@
           [required]="control.isRequired"
           [multiple]="control['multiple']"
         >
-          <mat-option>
+          <mat-option *ngIf="!control['hideSearchBox']">
             <ngx-mat-select-search
               ngModel
               (ngModelChange)="filterOptions($event, control)"

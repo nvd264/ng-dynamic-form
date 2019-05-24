@@ -14,8 +14,9 @@ import {
   HelperService
 } from 'dynamic-form';
 import { Validators, FormGroup, FormBuilder } from '@angular/forms';
-import { Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { Observable, of, from } from 'rxjs';
+import { delay, map } from 'rxjs/operators';
+import { ajax } from 'rxjs/ajax'
 
 @Component({
   selector: 'app-root',
@@ -44,10 +45,10 @@ export class AppComponent implements OnInit, AfterViewInit {
   data: any;
 
   braveOptions = [
-    { id: 1, name: 'Solid Name', key: 'solid', value: 'Solid' },
-    { id: 2, name: 'Great Name', key: 'great', value: 'Great' },
-    { id: 3, name: 'Good Name', key: 'good', value: 'Good' },
-    { id: 4, name: 'Unproven Name', key: 'unproven', value: 'Unproven' }
+    { id: 1, title: 'Solid Name', key: 'solid', value: 'Solid' },
+    { id: 2, title: 'Great Name', key: 'great', value: 'Great' },
+    { id: 3, title: 'Good Name', key: 'good', value: 'Good' },
+    { id: 4, title: 'Unproven Name', key: 'unproven', value: 'Unproven' }
   ];
 
   @ViewChild(DynamicFormComponent) dynamicForm: DynamicFormComponent;
@@ -74,12 +75,12 @@ export class AppComponent implements OnInit, AfterViewInit {
         options: this.braveOptions,
         value: [],
         order: 3,
-        labelValue: 'key',
-        labelName: 'name',
+        labelValue: 'id',
+        labelName: 'title',
         multiple: true,
         onSearch: (searchText) => {
           console.log('searchText', searchText);
-          this.helperService.updateDropdownOptions('brave', this.randomOptions());
+          return this.randomOptions();
         }
       }),
 
@@ -96,7 +97,8 @@ export class AppComponent implements OnInit, AfterViewInit {
         order: 3,
         labelValue: 'key',
         labelName: 'name',
-        multiple: false
+        multiple: false,
+        hideSearchBox: true
       }),
 
       new TextboxControl({
@@ -271,12 +273,8 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   randomOptions() {
-    const limit = Math.floor(Math.random() * (+1 - +100)) + +1;
-    console.log('limit', limit);
-    const fakeData = [];
-    for (let i = 0; i < Math.abs(limit); i++) {
-      fakeData.push({ id: i, name: `Test async ${i}`, key: `test-${i}`, value: `Test ${i}` });
-    }
-    return fakeData;
+    return ajax('https://jsonplaceholder.typicode.com/posts').pipe(
+      map(res => res.response)
+    );
   }
 }

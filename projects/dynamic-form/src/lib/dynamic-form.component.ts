@@ -8,8 +8,9 @@ import { IFormAction } from '../interfaces/IFormAction';
 import { ControlTypes } from '../enums/control-types.enum';
 import { CheckboxControl } from '../models/CheckboxControl';
 import { HelperService } from '../services/helper.service';
-import { filter, takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { filter, takeUntil, take, debounceTime, distinctUntilChanged, distinctUntilKeyChanged, map, mergeMap, switchMap, finalize } from 'rxjs/operators';
+import { Subject, from } from 'rxjs';
+import { IFilterOptions } from '../interfaces/IFilterOptions';
 
 @Component({
   selector: 'lib-dynamic-form',
@@ -29,6 +30,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy {
   form: FormGroup;
   controlTypes = ControlTypes;
   originControls: FormControlBase<any>[];
+  filterOptions$ = new Subject<IFilterOptions>();
+  filterControl: DropdownControl;
+
 
   constructor(private formControlService: FormControlService, private helperService: HelperService) {
     helperService.updateDrowdownOptions$.pipe(
@@ -37,9 +41,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy {
       takeUntil(this.unsubscribe$)
     ).subscribe(optionsData => {
       this.controls.map(c => {
-        if(c.key === optionsData.controlKey) {
+        if (c.key === optionsData.controlKey) {
           (<DropdownControl>c).options = optionsData.options;
-                // reset selected data from form
+          // reset selected data from form
           const newSelectedOptions = this.resetSelectedOptionsFromFormData(<DropdownControl>c);
           this.updateFormData({
             [optionsData.controlKey]: newSelectedOptions
@@ -70,6 +74,43 @@ export class DynamicFormComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.originControls = JSON.parse(JSON.stringify(this.controls));
     this.form = this.formControlService.toFormGroup(this.controls);
+
+    this.filterOptions$.pipe(
+      debounceTime(400),
+      map(value => {
+        this.filterControl = value.control;
+        return value;
+      }),
+      distinctUntilKeyChanged('searchText'),
+      switchMap(filter => filter.control.onSearch(filter.searchText)),
+    ).subscribe(options => {
+      if (Array.isArray(options)) {
+        let formData = { ...this.form.value };
+        formData = this.formControlService.getSelectedCheckboxesData(formData, this.controls);
+
+        const selectedOptionsValue = formData[this.filterControl.key];
+        const selectedOptions = this.filterControl.options.filter(
+          opt => selectedOptionsValue.indexOf(opt[this.filterControl.labelValue]) > -1
+        );
+
+        const newOptions = options.filter(opt => {
+          const optionValue = opt[this.filterControl.labelValue];
+          if (selectedOptions.find(s =>
+            (<DropdownControl>s)[this.filterControl.labelValue] === optionValue)
+          ) {
+            return false;
+          }
+          return true;
+        });
+
+        // make selected element on top of dropdown
+        this.helperService.updateDropdownOptions(
+          this.filterControl.key,
+          [...selectedOptions, ...newOptions]
+        );
+        this.filterControl = null;
+      }
+    });
   }
 
   /**
@@ -82,9 +123,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy {
       let value;
       if (checkboxControl) {
         value = this.formControlService
-                      .convertCheckboxesToFormData(
-                        data[name], <CheckboxControl>checkboxControl
-                      );
+          .convertCheckboxesToFormData(
+            data[name], <CheckboxControl>checkboxControl
+          );
       } else {
         value = data[name];
       }
@@ -99,7 +140,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy {
    * @param identity
    */
   identifyFormInstance(identity: string): boolean {
-    if(this.identity === DEFAULT_IDENTITY) {
+    if (this.identity === DEFAULT_IDENTITY) {
       return true;
     }
     return identity === this.identity;
@@ -111,8 +152,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy {
    */
   resetForm(e) {
     e.preventDefault();
-    this.form = this.formControlService.toFormGroup(this.originControls);
-    this.controls = this.originControls;
+    for (let i = 0; i < this.controls.length; i++) {
+      if (this.controls[i] instanceof DropdownControl) {
+        (<DropdownControl>this.controls[i]).options = (<DropdownControl>this.originControls[i]).options;
+      }
+    }
+    const formData = this.formControlService.getControlsData(this.originControls);
+    this.updateFormData(formData);
   }
 
   /**
@@ -126,7 +172,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy {
 
     const newSelectedOptions = [];
     control.options.map(opt => {
-      if(selectedOptions.indexOf(opt[control.labelValue]) > -1) {
+      if (selectedOptions.indexOf(opt[control.labelValue]) > -1) {
         // option exist on new list
         newSelectedOptions.push(opt[control.labelValue]);
       }
@@ -140,11 +186,14 @@ export class DynamicFormComponent implements OnInit, OnDestroy {
    * @param control
    */
   filterOptions(searchText: string, control: DropdownControl) {
-    if(control.searchOnServer) {
-      control.onSearch(searchText);
+    if (control.searchOnServer) {
+      this.filterOptions$.next({
+        control,
+        searchText
+      });
     } else {
       control.options.map(opt => {
-        if(opt[control.labelName].toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
+        if (opt[control.labelName].toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
           opt['hidden'] = false;
         } else {
           opt['hidden'] = true;

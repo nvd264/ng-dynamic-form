@@ -54,14 +54,23 @@
           #dynamicDropdown
           [panelClass]="!control['hideSearchBox'] ? 'panel-searchbox' : ''"
         >
-          <mat-option class="search-box" *ngIf="!control['hideSearchBox']" [disabled]="true">
+          <mat-option [class.multiple-select]="control['multiple']" class="search-box" *ngIf="!control['hideSearchBox']" [disabled]="true">
             <input
               matInput
               (ngModelChange)="onFilterOptions($event, control)"
               [(ngModel)]="control['searchText']"
               [ngModelOptions]="{standalone: true}"
               placeholder="Enter your search text..."
+              autocomplete="false"
             >
+            <mat-progress-spinner
+              *ngIf="control['loading']"
+              class="search-box-spinner"
+              color="primary"
+              mode="indeterminate"
+              diameter="20"
+            >
+            </mat-progress-spinner>
           </mat-option>
           <ng-container *ngFor="let opt of control['options']">
             <mat-option

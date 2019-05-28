@@ -38,4 +38,8 @@ export class HelperService {
       identity
     });
   }
+
+  scrollDropdownToTop() {
+    document.querySelector('.panel-searchbox').scrollTop = 0;
+  }
 }

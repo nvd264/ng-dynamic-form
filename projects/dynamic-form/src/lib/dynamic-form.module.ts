@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatInputModule, MatCheckboxModule, MatRadioModule, MatSelectModule, MatButtonModule } from '@angular/material';
 import { ErrorMessagesComponent } from './error-messages/error-messages.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [DynamicFormComponent, ErrorMessagesComponent],
@@ -17,7 +18,8 @@ import { ErrorMessagesComponent } from './error-messages/error-messages.componen
     MatSelectModule,
     MatCheckboxModule,
     MatRadioModule,
-    MatButtonModule
+    MatButtonModule,
+    MatProgressSpinnerModule
   ],
   exports: [DynamicFormComponent]
 })

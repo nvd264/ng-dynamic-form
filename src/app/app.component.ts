@@ -105,7 +105,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         labelValue: 'key',
         labelName: 'name',
         multiple: false,
-        hideSearchBox: true
+        // hideSearchBox: true
       }),
 
       new TextboxControl({

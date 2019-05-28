@@ -43,8 +43,12 @@
   left: 0;
   background: #fff;
   z-index: 999;
-  min-width: calc(100% + 48px);
   border-bottom: 1px solid #e7e7e7;
+  min-width: calc(100% + 32px);
+}
+
+::ng-deep .mat-option.search-box.multiple-select {
+  min-width: calc(100% + 64px);
 }
 
 .panel-searchbox {
@@ -55,4 +59,10 @@
 ::ng-deep .panel-searchbox {
   transform: none !important;
   padding-top: 48px !important;
+}
+
+.search-box-spinner {
+  position: absolute;
+  right: 14px;
+  top: 14px;
 }

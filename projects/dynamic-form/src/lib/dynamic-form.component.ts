@@ -208,8 +208,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param control
    */
   onFilterOptions(searchText: string, control: DropdownControl) {
-    console.log('searchText', searchText);
-    console.log('searchText control', control);
     if (control.searchOnServer) {
       this.filterOptions$.next({
         control,
@@ -235,6 +233,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       map(value => {
         this.filterControl = value.control;
         this.filterControl.loading = true;
+        this.helperService.scrollDropdownToTop();
         return value;
       }),
       distinctUntilKeyChanged('searchText'),

@@ -49,15 +49,19 @@
           [formControlName]="control.key"
           [required]="control.isRequired"
           [multiple]="control['multiple']"
+          [attr.data-key]="control.key"
+          disableOptionCentering
+          #dynamicDropdown
+          [panelClass]="!control['hideSearchBox'] ? 'panel-searchbox' : ''"
         >
-          <mat-option *ngIf="!control['hideSearchBox']">
-            <ngx-mat-select-search
-              ngModel
-              (ngModelChange)="filterOptions($event, control)"
-              [ngModelOptions]="{ standalone: true }"
-              [placeholderLabel]="'Typing for search...'"
-              [noEntriesFoundLabel]="'No data found'"
-            ></ngx-mat-select-search>
+          <mat-option class="search-box" *ngIf="!control['hideSearchBox']" [disabled]="true">
+            <input
+              matInput
+              (ngModelChange)="onFilterOptions($event, control)"
+              [(ngModel)]="control['searchText']"
+              [ngModelOptions]="{standalone: true}"
+              placeholder="Enter your search text..."
+            >
           </mat-option>
           <ng-container *ngFor="let opt of control['options']">
             <mat-option

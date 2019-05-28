@@ -8,8 +8,11 @@ export class DropdownControl extends FormControlBase<any> {
   options: { value: string; label: string }[] = [];
   multiple = false;
   onSearch: any;
+  loadMore: any;
   searchOnServer = false;
   hideSearchBox = false;
+  searchText = '';
+  loading = false;
 
   constructor(options = {}) {
     super(options);
@@ -17,6 +20,7 @@ export class DropdownControl extends FormControlBase<any> {
     this.labelValue = options['labelValue'] || '';
     this.labelName = options['labelName'] || '';
     this.multiple = !!options['multiple'];
+    this.searchText = options['searchText'] || '';
     this.hideSearchBox = !!options['hideSearchBox'];
 
     if(this.multiple && !Array.isArray(this.value)) {
@@ -27,6 +31,10 @@ export class DropdownControl extends FormControlBase<any> {
     if(typeof options['onSearch'] === 'function') {
       this.onSearch =  options['onSearch'];
       this.searchOnServer = true;
+    }
+
+    if(typeof options['loadMore'] === 'function') {
+      this.loadMore =  options['loadMore'];
     }
   }
 }

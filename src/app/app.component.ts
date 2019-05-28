@@ -79,9 +79,16 @@ export class AppComponent implements OnInit, AfterViewInit {
         labelName: 'title',
         multiple: true,
         onSearch: (searchText) => {
+          // reset paged into 1
           console.log('searchText', searchText);
           return this.randomOptions();
-        }
+        },
+        loadMore: (searchText) => {
+          console.log('load more...');
+          console.log('search text from outside', searchText);
+          return from(this.loadMoreOptions());
+        },
+        hideSearchBox: false
       }),
 
       new DropdownControl({
@@ -276,5 +283,26 @@ export class AppComponent implements OnInit, AfterViewInit {
     return ajax('https://jsonplaceholder.typicode.com/posts').pipe(
       map(res => res.response)
     );
+  }
+
+  loadMoreOptions() {
+    return new Promise(function(res, rej) {
+      setTimeout(function() {
+        res([
+          {
+            id: 9000,
+            title: 'More 9000'
+          },
+          {
+            id: 9001,
+            title: 'More 9001'
+          },
+          {
+            id: 9002,
+            title: 'More 9002'
+          }
+        ])
+      }, 2000);
+    });
   }
 }

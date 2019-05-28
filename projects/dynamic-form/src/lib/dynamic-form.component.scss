@@ -35,3 +35,24 @@
     }
   }
 }
+
+::ng-deep .mat-option.search-box .mat-pseudo-checkbox{ display: none; }
+::ng-deep .mat-option.search-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #fff;
+  z-index: 999;
+  min-width: calc(100% + 48px);
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.panel-searchbox {
+  transform: none !important;
+  padding-top: 48px;
+}
+
+::ng-deep .panel-searchbox {
+  transform: none !important;
+  padding-top: 48px !important;
+}

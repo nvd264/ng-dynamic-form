@@ -249,9 +249,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       )
       .subscribe(options => {
         if (Array.isArray(options)) {
-          options.forEach(opt => {
-            this.loadMoreControl.options.push(opt);
-          });
+          // options.forEach(opt => {
+          //   this.loadMoreControl.options.push(opt);
+          // });
           const dropdownControl = this.getControl(this.loadMoreControl.key);
           if(dropdownControl instanceof DropdownControl) {
             dropdownControl.options = [...dropdownControl.options, ...options];

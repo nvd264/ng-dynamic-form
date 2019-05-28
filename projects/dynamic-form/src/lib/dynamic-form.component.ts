@@ -1,17 +1,33 @@
-import { DEFAULT_IDENTITY } from './../const';
-import { DropdownControl } from './../models/DropdownControl';
-import { FormControlService } from './../services/form-control.service';
-import { FormControlBase } from './../models/FormControlBase';
-import { FormGroup, FormControl } from '@angular/forms';
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy, AfterViewInit, ViewChildren, QueryList, OnChanges, SimpleChanges } from '@angular/core';
-import { IFormAction } from '../interfaces/IFormAction';
-import { ControlTypes } from '../enums/control-types.enum';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  QueryList,
+  ViewChildren
+} from '@angular/core';
 import { CheckboxControl } from '../models/CheckboxControl';
+import { ControlTypes } from '../enums/control-types.enum';
+import {
+  debounceTime,
+  distinctUntilKeyChanged,
+  exhaustMap,
+  map,
+  switchMap,
+  takeUntil
+} from 'rxjs/operators';
+import { DropdownControl } from './../models/DropdownControl';
+import { FormGroup } from '@angular/forms';
+import { FormControlBase } from './../models/FormControlBase';
+import { FormControlService } from './../services/form-control.service';
 import { HelperService } from '../services/helper.service';
-import { filter, takeUntil, debounceTime, distinctUntilKeyChanged, map, switchMap, exhaustMap } from 'rxjs/operators';
-import { Subject } from 'rxjs';
-import { MatSelect } from '@angular/material';
 import { IDynamicOptions } from '../interfaces/IDynamicOptions';
+import { IFormAction } from '../interfaces/IFormAction';
+import { MatSelect } from '@angular/material';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'lib-dynamic-form',
@@ -19,8 +35,6 @@ import { IDynamicOptions } from '../interfaces/IDynamicOptions';
   styleUrls: ['./dynamic-form.component.scss']
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
-  // unique form for service when update data
-  @Input() identity = DEFAULT_IDENTITY;
   @Input() controls: FormControlBase<any>[] = [];
   @Input() actions: IFormAction;
   @Output() submit = new EventEmitter<any>();
@@ -34,46 +48,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   filterControl: DropdownControl;
   loadMoreOptions$ = new Subject<DropdownControl>();
   loadMoreControl: DropdownControl;
-  searchText = new FormControl('');
 
-  constructor(private formControlService: FormControlService, private helperService: HelperService) {
-    helperService.updateDrowdownOptions$.pipe(
-      // make sure update correct form on per page
-      filter(value => this.identifyFormInstance(value.identity)),
-      takeUntil(this.unsubscribe$)
-    ).subscribe(optionsData => {
-      this.controls.map(c => {
-        if (c.key === optionsData.controlKey) {
-          (<DropdownControl>c).options = optionsData.options;
-          // reset selected data from form
-          const newSelectedOptions = this.resetSelectedOptionsFromFormData(<DropdownControl>c);
-          this.updateFormData({
-            [optionsData.controlKey]: newSelectedOptions
-          })
-        }
-        return c;
-      })
-    });
-
-    helperService.setFormData$.pipe(
-      // make sure update correct form on per page
-      filter(value => this.identifyFormInstance(value.identity)),
-      takeUntil(this.unsubscribe$)
-    ).subscribe(formData => {
-      this.updateFormData(formData.data);
-    });
-  }
-
-  /**
-   * Get form controls
-   */
-  get formControls() {
-    return this.form.controls;
-  }
-
-  ngOnDestroy() {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
+  constructor(
+    private formControlService: FormControlService,
+    private helperService: HelperService) {
   }
 
   ngOnInit() {
@@ -85,6 +63,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    // loop through and add scroll event listener for each dropdown
     this.dynamicDropdown.forEach(dropdown => {
       dropdown.openedChange.pipe(
         takeUntil(this.unsubscribe$)
@@ -107,6 +86,18 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       })
     });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
+
+  /**
+   * Get form controls
+   */
+  get formControls() {
+    return this.form.controls;
   }
 
   /**
@@ -158,17 +149,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Identify form instance for update data
-   * @param identity
-   */
-  identifyFormInstance(identity: string): boolean {
-    if (this.identity === DEFAULT_IDENTITY) {
-      return true;
-    }
-    return identity === this.identity;
-  }
-
-  /**
    * Reset form
    * @param e
    */
@@ -176,30 +156,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     e.preventDefault();
     for (let i = 0; i < this.controls.length; i++) {
       if (this.controls[i] instanceof DropdownControl) {
+        // override only options of dropdown
+        // avoid error when function lost connect with parent
         (<DropdownControl>this.controls[i]).options = (<DropdownControl>this.originControls[i]).options;
       }
     }
     const formData = this.formControlService.getControlsData(this.originControls);
     this.updateFormData(formData);
-  }
-
-  /**
-   * Reset Selected Options From Form Data
-   * @param control
-   */
-  resetSelectedOptionsFromFormData(control: DropdownControl) {
-    let formData = { ...this.form.value };
-    formData = this.formControlService.getSelectedCheckboxesData(formData, this.controls);
-    const selectedOptions = formData[control.key];
-
-    const newSelectedOptions = [];
-    control.options.map(opt => {
-      if (selectedOptions.indexOf(opt[control.labelValue]) > -1) {
-        // option exist on new list
-        newSelectedOptions.push(opt[control.labelValue]);
-      }
-    });
-    return newSelectedOptions;
   }
 
   /**
@@ -215,6 +178,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       });
     } else {
       control.options.map(opt => {
+        // just set attribute hidden for selectop
+        // prevent lost data
         if (opt[control.labelName].toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
           opt['hidden'] = false;
         } else {
@@ -260,12 +225,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           }
           return true;
         });
-
         // make selected element on top of dropdown
-        this.helperService.updateDropdownOptions(
-          key,
-          [...selectedOptions, ...newOptions]
-        );
+        this.setDropdownOptions(key, [...selectedOptions, ...newOptions]);
         this.filterControl.loading = false;
       }
     });
@@ -291,15 +252,36 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           options.forEach(opt => {
             this.loadMoreControl.options.push(opt);
           });
-          this.controls.map(c => {
-            if (c.key === this.loadMoreControl.key) {
-              c['options'] = [...c['options'], ...options];
-            }
-            return c;
-          });
+          const dropdownControl = this.getControl(this.loadMoreControl.key);
+          if(dropdownControl instanceof DropdownControl) {
+            dropdownControl.options = [...dropdownControl.options, ...options];
+          }
         }
         this.loadMoreControl.loading = false;
       });
+  }
+
+  /**
+   * Set dropdown options
+   * @param controlKey
+   * @param options
+   */
+  setDropdownOptions(controlKey: string, options: any[]) {
+    const control = <DropdownControl>this.getControl(controlKey, ControlTypes.DROPDOWN);
+    if(control) {
+      control.options = options;
+
+      // reset selected data from form
+      const newSelectedOptions = this.formControlService
+      .resetSelectedOptionsFromFormData(
+        this.form.value,
+        control,
+        this.controls
+      );
+      this.updateFormData({
+      [controlKey]: newSelectedOptions
+      })
+    }
   }
 
   /**

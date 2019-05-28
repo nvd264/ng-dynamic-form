@@ -10,8 +10,7 @@ import {
   ErrorTypes,
   IAction,
   IFormAction,
-  DynamicFormComponent,
-  HelperService
+  DynamicFormComponent
 } from 'dynamic-form';
 import { Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { Observable, of, from } from 'rxjs';
@@ -53,7 +52,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   @ViewChild(DynamicFormComponent) dynamicForm: DynamicFormComponent;
 
-  constructor(private fb: FormBuilder, private helperService: HelperService) {
+  constructor(private fb: FormBuilder) {
   }
 
   ngOnInit() {
@@ -79,13 +78,9 @@ export class AppComponent implements OnInit, AfterViewInit {
         labelName: 'title',
         multiple: true,
         onSearch: (searchText) => {
-          // reset paged into 1
-          console.log('searchText', searchText);
           return this.randomOptions();
         },
         loadMore: (searchText) => {
-          console.log('load more...');
-          console.log('search text from outside', searchText);
           return from(this.loadMoreOptions());
         },
         hideSearchBox: false
@@ -111,7 +106,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       new TextboxControl({
         key: 'firstName',
         label: 'First name',
-        value: 'default first name',
+        value: '',
         validators: [
           {
             validate: ErrorTypes.REQUIRED,
@@ -119,6 +114,19 @@ export class AppComponent implements OnInit, AfterViewInit {
           }
         ],
         order: 1,
+      }),
+
+      new TextboxControl({
+        key: 'lastName',
+        label: 'Last name',
+        value: '',
+        validators: [
+          {
+            validate: ErrorTypes.REQUIRED,
+            message: 'Last name is required'
+          }
+        ],
+        order: 2,
       }),
 
       new TextboxControl({
@@ -211,10 +219,10 @@ export class AppComponent implements OnInit, AfterViewInit {
         validators: [
           {
             validate: ErrorTypes.REQUIRED,
-            message: 'First name is required'
+            message: 'Password is required'
           }
         ],
-        order: 1,
+        order: 2,
         type: 'password'
       }),
     ];
@@ -222,61 +230,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     return questions.sort((a, b) => a.order - b.order);
   }
 
-  getAsyncData(): Observable<any[]> {
-    const fakeData = [];
-    for (let i = 0; i < 10; i++) {
-      fakeData.push({ id: i, name: `Test async ${i}`, key: `test-${i}`, value: `Test ${i}` });
-    }
-    return of(fakeData).pipe(delay(5000));
-  }
-
   getFormResponse(data: any) {
     this.response = data;
-  }
-
-  getSampleAsyncData() {
-    setTimeout(() => {
-      this.dynamicForm.updateFormData({
-        firstName: 'Sample First name',
-        emailAddress: 'sample@gmail',
-        englishLevel: [4]
-      });
-    }, 3000);
-  }
-
-  directChangeOptionsFromControl() {
-    const fakeData = [];
-    for (let i = 0; i < 10; i++) {
-      fakeData.push({ id: i, name: `Test async ${i}`, key: `test-${i}`, value: `Test ${i}` });
-    }
-    setTimeout(() => {
-      // this.questions[0]['options'] = fakeData;
-      // console.log(this.questions);
-      const dropdown = <DropdownControl>this.questions.find(q => q.key === 'brave');
-      if (dropdown) {
-        dropdown.options = fakeData;
-      }
-    }, 2000);
-  }
-
-  updateOptionsByService() {
-    const fakeData = [];
-    for (let i = 0; i < 10; i++) {
-      fakeData.push({ id: i, name: `Test async ${i}`, key: `test-${i}`, value: `Test ${i}` });
-    }
-    fakeData.push({ id: 2, name: 'Great Name', key: 'great', value: 'Great' });
-    fakeData.push({ id: 3, name: 'Good Name', key: 'good', value: 'Good' });
-    this.helperService.updateDropdownOptions('brave', fakeData);
-  }
-
-  setFormDataFromService() {
-    const data = {
-      firstName: 'Sample First name from service',
-      emailAddress: 'sample-service@gmail',
-      englishLevel: [4, 2]
-    };
-
-    this.helperService.setFormData(data);
   }
 
   randomOptions() {
@@ -286,7 +241,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   loadMoreOptions() {
-    return new Promise(function(res, rej) {
+    return new Promise(function(res) {
       setTimeout(function() {
         res([
           {
@@ -303,6 +258,15 @@ export class AppComponent implements OnInit, AfterViewInit {
           }
         ])
       }, 2000);
+    });
+  }
+
+  // update form data
+  updateFormData() {
+    this.dynamicForm.updateFormData({
+      firstName: 'Shadow',
+      lastName: 'Fiend',
+      brave: [1, 2, 100] // value don't exist in options list still availale in form data
     });
   }
 }

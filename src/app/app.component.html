@@ -3,17 +3,18 @@
   <h1>Welcome to {{ title }}!</h1>
 </div>
 
-<button type="button" (click)="getSampleAsyncData()">Get Sample Asyn Data</button>
-<button type="button" (click)="directChangeOptionsFromControl()">Direct change options</button>
-<button type="button" (click)="updateOptionsByService()">Update Options By Service</button>
-<button type="button" (click)="setFormDataFromService()">Set Form Data By Service</button>
-
-<div style="width: 50%; display: block; margin: 50px auto">
+<div style="width: 40%; display: block; margin: 50px auto">
   <lib-dynamic-form
     [controls]="questions"
     [actions]="actions"
     (submit)="getFormResponse($event)"
   ></lib-dynamic-form>
+
+  <div>
+    <br />
+    <button mat-raised-button color="warn" (click)="updateFormData()">Update sample data</button>
+
+  </div>
 
   <p>{{ response | json }}</p>
 </div>

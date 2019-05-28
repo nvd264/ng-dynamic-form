@@ -124,7 +124,27 @@ export class FormControlService {
    */
   convertCheckboxesToFormData(checkedValues: Array<string | number>, control: CheckboxControl) {
     return control.options.map(
-      checkbox => !!(checkedValues.indexOf(checkbox[control['labelValue']]) > -1)
+      checkbox => {
+        return !!(checkedValues.indexOf(checkbox[control['labelValue']]) > -1);
+      }
     );
+  }
+
+  /**
+   * Reset Selected Options From Form Data
+   * @param control
+   */
+  resetSelectedOptionsFromFormData(formData: Object, control: DropdownControl, controls: FormControlBase<any>[]) {
+    formData = this.getSelectedCheckboxesData(formData, controls);
+    const selectedOptions = formData[control.key];
+
+    const newSelectedOptions = [];
+    control.options.map(opt => {
+      if (selectedOptions.indexOf(opt[control.labelValue]) > -1) {
+        // option exist on new list
+        newSelectedOptions.push(opt[control.labelValue]);
+      }
+    });
+    return newSelectedOptions;
   }
 }

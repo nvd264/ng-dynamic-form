@@ -5,9 +5,6 @@
 export * from './lib/dynamic-form.component';
 export * from './lib/dynamic-form.module';
 
-// Services
-export * from './services/helper.service';
-
 // Controls
 export * from './models/CheckboxControl';
 export * from './models/DropdownControl';

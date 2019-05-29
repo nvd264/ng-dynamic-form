@@ -62,6 +62,7 @@
               [ngModelOptions]="{standalone: true}"
               placeholder="Enter your search text..."
               autocomplete="false"
+              (keydown)="$event.stopPropagation()"
             >
             <mat-progress-spinner
               *ngIf="control['loading']"

@@ -1,5 +1,7 @@
 import { FormControlBase } from './FormControlBase';
 import { ControlTypes } from '../enums/control-types.enum';
+import { tap } from 'rxjs/operators';
+import { isObservable } from 'rxjs';
 
 export class DropdownControl extends FormControlBase<any> {
   controlType = ControlTypes.DROPDOWN;
@@ -9,14 +11,15 @@ export class DropdownControl extends FormControlBase<any> {
   multiple = false;
   onSearch: any;
   loadMore: any;
-  searchOnServer = false;
   hideSearchBox = false;
   searchText = '';
   loading = false;
+  searchOnServer = false;
+  supportLoadMore = false;
 
   constructor(options = {}) {
     super(options);
-    this.options = options['options'] || [];
+
     this.labelValue = options['labelValue'] || '';
     this.labelName = options['labelName'] || '';
     this.multiple = !!options['multiple'];
@@ -35,6 +38,19 @@ export class DropdownControl extends FormControlBase<any> {
 
     if(typeof options['loadMore'] === 'function') {
       this.loadMore =  options['loadMore'];
+      this.supportLoadMore = true;
+    }
+
+    // set options base type
+    if(isObservable(options['options'])) {
+      options['options'].pipe(
+        tap(() => this.loading = true)
+      ).subscribe(options => {
+        this.options = options;
+        this.loading = false;
+      });
+    } else {
+      this.options = options['options'] || [];
     }
   }
 }

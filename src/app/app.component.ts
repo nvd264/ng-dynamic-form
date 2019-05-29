@@ -1,3 +1,4 @@
+import { environment } from './../environments/environment';
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import {
   FormControlBase,
@@ -43,12 +44,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   data: any;
 
-  braveOptions = [
-    { id: 1, title: 'Solid Name', key: 'solid', value: 'Solid' },
-    { id: 2, title: 'Great Name', key: 'great', value: 'Great' },
-    { id: 3, title: 'Good Name', key: 'good', value: 'Good' },
-    { id: 4, title: 'Unproven Name', key: 'unproven', value: 'Unproven' }
-  ];
+  pageOfPosts = 1;
 
   @ViewChild(DynamicFormComponent) dynamicForm: DynamicFormComponent;
 
@@ -58,6 +54,10 @@ export class AppComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.questions = this.getQuestions();
     this.cloneQuestions = this.getQuestions();
+
+    // this.getPosts().subscribe(posts => {
+    //   this.dynamicForm.setDropdownOptions('posts', posts);
+    // });
   }
 
   ngAfterViewInit() {
@@ -69,38 +69,23 @@ export class AppComponent implements OnInit, AfterViewInit {
   getQuestions() {
     const questions: FormControlBase<any>[] = [
       new DropdownControl({
-        key: 'brave',
-        label: 'Bravery Rating',
-        options: this.braveOptions,
+        key: 'posts',
+        label: 'Posts',
+        options: this.getPosts(),
         value: [],
         order: 3,
         labelValue: 'id',
         labelName: 'title',
         multiple: true,
         onSearch: (searchText) => {
-          return this.randomOptions();
+          this.pageOfPosts = 1;
+          return this.getPosts(this.pageOfPosts, searchText);
         },
         loadMore: (searchText) => {
-          return from(this.loadMoreOptions());
-        },
-        hideSearchBox: false
-      }),
-
-      new DropdownControl({
-        key: 'brave-2',
-        label: 'Bravery Rating 2',
-        options: [
-          { id: 1, name: 'Solid Name 2', key: 'solid', value: 'Solid' },
-          { id: 2, name: 'Great Name 2', key: 'great', value: 'Great' },
-          { id: 3, name: 'Good Name 2', key: 'good', value: 'Good' },
-          { id: 4, name: 'Unproven Name 2', key: 'unproven', value: 'Unproven' }
-        ],
-        value: [],
-        order: 3,
-        labelValue: 'key',
-        labelName: 'name',
-        multiple: false,
-        // hideSearchBox: true
+          this.pageOfPosts += 1;
+          console.log('this.pageOfPosts', this.pageOfPosts);
+          return this.getPosts(this.pageOfPosts, searchText);
+        }
       }),
 
       new TextboxControl({
@@ -230,35 +215,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     return questions.sort((a, b) => a.order - b.order);
   }
 
+  /**
+   * Print json data from form
+   * @param data
+   */
   getFormResponse(data: any) {
     this.response = data;
-  }
-
-  randomOptions() {
-    return ajax('https://jsonplaceholder.typicode.com/posts').pipe(
-      map(res => res.response)
-    );
-  }
-
-  loadMoreOptions() {
-    return new Promise(function(res) {
-      setTimeout(function() {
-        res([
-          {
-            id: 9000,
-            title: 'More 9000'
-          },
-          {
-            id: 9001,
-            title: 'More 9001'
-          },
-          {
-            id: 9002,
-            title: 'More 9002'
-          }
-        ])
-      }, 2000);
-    });
   }
 
   // update form data
@@ -266,7 +228,17 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.dynamicForm.updateFormData({
       firstName: 'Shadow',
       lastName: 'Fiend',
-      brave: [1, 2, 100] // value don't exist in options list still availale in form data
+      posts: [1, 2, 100] // value don't exist in options list still availale in form data
     });
+  }
+
+  /**
+   * Get fake post from db.json use json-server
+   * @param page
+   */
+  getPosts(page = 1, searchText = '') {
+    return from(ajax(environment.FAKE_API + `/posts?_page=${page}&title_like=${searchText}`).pipe(
+      map(res => res.response)
+    ));
   }
 }

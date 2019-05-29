@@ -17,7 +17,8 @@ import {
   exhaustMap,
   map,
   switchMap,
-  takeUntil
+  takeUntil,
+  finalize
 } from 'rxjs/operators';
 import { DropdownControl } from './../models/DropdownControl';
 import { FormGroup } from '@angular/forms';
@@ -72,12 +73,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           const select: HTMLElement = dropdown._elementRef.nativeElement;
           const panel: HTMLElement = dropdown.panel.nativeElement;
           const controlKey = select.getAttribute('data-key');
-          const control = this.getControl(controlKey);
-          if (control) {
+          const control = <DropdownControl>this.getControl(controlKey);
+          if (control && control.supportLoadMore) {
             panel.addEventListener(
               'scroll',
               event => this.loadMoreOptionsOnScroll(
-                event, <DropdownControl>control
+                event, control
               ));
           }
         } else {
@@ -121,7 +122,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   loadMoreOptionsOnScroll(event, control: DropdownControl) {
     const { scrollTop, clientHeight, scrollHeight } = event.target;
-    if ((scrollTop + clientHeight + 50) >= scrollHeight) {
+    if ((scrollTop + clientHeight) >= scrollHeight && control.supportLoadMore) {
       this.loadMoreOptions$.next(control);
     }
   }
@@ -195,13 +196,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   watchFilterDropdownOptions() {
     this.filterOptions$.pipe(
       debounceTime(400),
+      distinctUntilKeyChanged('searchText'),
       map(value => {
         this.filterControl = value.control;
         this.filterControl.loading = true;
         this.helperService.scrollDropdownToTop();
         return value;
       }),
-      distinctUntilKeyChanged('searchText'),
       switchMap(filter => filter.control.onSearch(filter.searchText)),
       takeUntil(this.unsubscribe$)
     ).subscribe(options => {
@@ -248,14 +249,17 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         takeUntil(this.unsubscribe$)
       )
       .subscribe(options => {
-        if (Array.isArray(options)) {
-          // options.forEach(opt => {
-          //   this.loadMoreControl.options.push(opt);
-          // });
-          const dropdownControl = this.getControl(this.loadMoreControl.key);
-          if(dropdownControl instanceof DropdownControl) {
-            dropdownControl.options = [...dropdownControl.options, ...options];
-          }
+        const dropdownControl = <DropdownControl>this.getControl(this.loadMoreControl.key);
+        const { labelValue } = dropdownControl;
+        if (Array.isArray(options) && options.length) {
+          // filter options
+          const filteredOptions = options.filter(opt => {
+            if (dropdownControl.options.find(o => o[labelValue] === opt[labelValue])) {
+              return false;
+            }
+            return true;
+          });
+          dropdownControl.options = [...dropdownControl.options, ...filteredOptions];
         }
         this.loadMoreControl.loading = false;
       });
@@ -268,18 +272,18 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   setDropdownOptions(controlKey: string, options: any[]) {
     const control = <DropdownControl>this.getControl(controlKey, ControlTypes.DROPDOWN);
-    if(control) {
+    if (control) {
       control.options = options;
 
       // reset selected data from form
       const newSelectedOptions = this.formControlService
-      .resetSelectedOptionsFromFormData(
-        this.form.value,
-        control,
-        this.controls
-      );
+        .resetSelectedOptionsFromFormData(
+          this.form.value,
+          control,
+          this.controls
+        );
       this.updateFormData({
-      [controlKey]: newSelectedOptions
+        [controlKey]: newSelectedOptions
       })
     }
   }

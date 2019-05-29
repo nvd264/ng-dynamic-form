@@ -12,6 +12,7 @@ export * from './models/FormControlBase';
 export * from './models/RadioGroupControl';
 export * from './models/TextareaControl';
 export * from './models/TextboxControl';
+export * from './models/CustomFieldControl';
 
 // Interfaces
 export * from './interfaces/IAction';

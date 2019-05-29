@@ -3,5 +3,6 @@ export enum ControlTypes {
   DROPDOWN = 'DROPDOWN',
   RADIO = 'RADIO',
   TEXTAREA = 'TEXTAREA',
-  TEXTBOX = 'TEXTBOX'
+  TEXTBOX = 'TEXTBOX',
+  CUSTOM = 'CUSTOM'
 }

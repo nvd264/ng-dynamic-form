@@ -6,9 +6,15 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatInputModule, MatCheckboxModule, MatRadioModule, MatSelectModule, MatButtonModule } from '@angular/material';
 import { ErrorMessagesComponent } from './error-messages/error-messages.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { DynamicFieldDirective } from '../directives/dynamic-field.directive';
+import { CustomFieldComponent } from './custom-field/custom-field.component';
 
 @NgModule({
-  declarations: [DynamicFormComponent, ErrorMessagesComponent],
+  declarations: [
+    DynamicFormComponent,
+    ErrorMessagesComponent,
+    DynamicFieldDirective,
+    CustomFieldComponent],
   imports: [
     FormsModule,
     ReactiveFormsModule,

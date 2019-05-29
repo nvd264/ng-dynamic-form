@@ -1,0 +1,18 @@
+<div class="phone-wrapper">
+  <mat-form-field class="phone-code">
+    <input
+      matInput
+      [(ngModel)]="phoneCode"
+      placeholder="Code"
+      (change)="onValueChange($event)"
+    />
+  </mat-form-field>
+  <mat-form-field class="phone-number">
+    <input
+      matInput
+      [(ngModel)]="phoneNumber"
+      placeholder="Your phone number"
+      (change)="onValueChange($event)"
+    />
+  </mat-form-field>
+</div>

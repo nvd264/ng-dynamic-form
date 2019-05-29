@@ -1,3 +1,5 @@
+import { TelWrapperComponent } from './../custom-control/tel-wrapper/tel-wrapper.component';
+import { TelComponent } from './../custom-fields/tel/tel.component';
 import { environment } from './../environments/environment';
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import {
@@ -11,7 +13,8 @@ import {
   ErrorTypes,
   IAction,
   IFormAction,
-  DynamicFormComponent
+  DynamicFormComponent,
+  CustomFieldControl
 } from 'dynamic-form';
 import { Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { Observable, of, from } from 'rxjs';
@@ -46,6 +49,8 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   pageOfPosts = 1;
 
+  tel: string;
+
   @ViewChild(DynamicFormComponent) dynamicForm: DynamicFormComponent;
 
   constructor(private fb: FormBuilder) {
@@ -54,10 +59,6 @@ export class AppComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.questions = this.getQuestions();
     this.cloneQuestions = this.getQuestions();
-
-    // this.getPosts().subscribe(posts => {
-    //   this.dynamicForm.setDropdownOptions('posts', posts);
-    // });
   }
 
   ngAfterViewInit() {
@@ -72,7 +73,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         key: 'posts',
         label: 'Posts',
         options: this.getPosts(),
-        value: [],
+        value: [1,2],
         order: 3,
         labelValue: 'id',
         labelName: 'title',
@@ -209,6 +210,18 @@ export class AppComponent implements OnInit, AfterViewInit {
         order: 2,
         type: 'password'
       }),
+
+      new CustomFieldControl({
+        key: 'tel',
+        order: 10,
+        component: TelWrapperComponent,
+        validators: [
+          {
+            validate: ErrorTypes.REQUIRED,
+            message: 'Custom field is required'
+          }
+        ]
+      })
     ];
 
     return questions.sort((a, b) => a.order - b.order);
@@ -227,7 +240,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.dynamicForm.updateFormData({
       firstName: 'Shadow',
       lastName: 'Fiend',
-      posts: [1, 2, 100] // value don't exist in options list still availale in form data
+      posts: [1, 2, 100] // value don't exist in options list but still availale in form data
     });
   }
 

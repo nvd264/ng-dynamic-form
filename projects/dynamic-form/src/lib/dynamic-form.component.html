@@ -151,6 +151,20 @@
         </mat-error>
       </div>
       <!-- End radio -->
+
+      <!-- Custom form field -->
+      <div *ngSwitchCase="controlTypes.CUSTOM" class="custom-section">
+        <custom-field [form]="form" [control]="control"></custom-field>
+        <mat-error
+          *ngIf="form.get(control.key).errors && form.get(control.key).touched"
+        >
+          <error-messages
+            [errors]="form.get(control.key).errors"
+            [validators]="control.validators"
+          ></error-messages>
+        </mat-error>
+      </div>
+      <!-- End Custom form field -->
     </div>
   </div>
   <!-- End form controls -->

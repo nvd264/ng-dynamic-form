@@ -83,7 +83,6 @@ export class AppComponent implements OnInit, AfterViewInit {
         },
         loadMore: (searchText) => {
           this.pageOfPosts += 1;
-          console.log('this.pageOfPosts', this.pageOfPosts);
           return this.getPosts(this.pageOfPosts, searchText);
         }
       }),

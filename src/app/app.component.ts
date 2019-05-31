@@ -19,7 +19,7 @@ import {
 import { Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { Observable, of, from } from 'rxjs';
 import { delay, map } from 'rxjs/operators';
-import { ajax } from 'rxjs/ajax'
+import { ajax } from 'rxjs/ajax';
 
 @Component({
   selector: 'app-root',
@@ -229,7 +229,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   /**
    * Print json data from form
-   * @param data
+   * @param data any
    */
   getFormResponse(data: any) {
     this.response = data;
@@ -240,13 +240,14 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.dynamicForm.updateFormData({
       firstName: 'Shadow',
       lastName: 'Fiend',
-      posts: [1, 2, 100] // value don't exist in options list but still availale in form data
+      posts: [1, 2, 100] // value don't exist in options list but still available in form data
     });
   }
 
   /**
    * Get fake post from db.json use json-server
-   * @param page
+   * @param page number
+   * @param searchText string
    */
   getPosts(page = 1, searchText = '') {
     return from(ajax(environment.FAKE_API + `/posts?_page=${page}&title_like=${searchText}`).pipe(

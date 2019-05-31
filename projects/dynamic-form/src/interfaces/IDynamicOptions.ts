@@ -1,6 +1,6 @@
 import { DropdownControl } from './../models/DropdownControl';
 
 export interface IDynamicOptions {
-  control: DropdownControl,
-  searchText: string
+  control: DropdownControl;
+  searchText: string;
 }

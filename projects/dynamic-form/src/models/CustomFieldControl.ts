@@ -9,7 +9,7 @@ export class CustomFieldControl extends FormControlBase<any> {
     super(options);
 
     if(options['component']) {
-      this.component = options.component;
+      this.component = options['component'];
     }
   }
 }

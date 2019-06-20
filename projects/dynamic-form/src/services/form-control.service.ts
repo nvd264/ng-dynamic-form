@@ -102,7 +102,7 @@ export class FormControlService {
         const options = control.options || [];
 
         if (formData[key].length !== options.length) {
-          throw Error(`Checkboxes and options doesn't equal.`);
+          throw Error(`Number of checkboxes and options doesn't equal.`);
         }
         const checkboxesData = [];
         for (let i = 0; i < formData[key].length; i++) {

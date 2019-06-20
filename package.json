@@ -1,14 +1,24 @@
 {
   "name": "ng-dynamic-form",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "A simple library for dynamic form to be use with Angular Material",
+  "author": "Dong Nguyen",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "build:library": "ng build dynamic-form"
   },
+  "keywords": [
+    "angular",
+    "dynamic-form",
+    "angular material",
+    "javascript",
+    "typescript"
+  ],
   "private": true,
   "dependencies": {
     "@angular/animations": "^7.2.15",
@@ -50,5 +60,6 @@
     "tslib": "^1.9.0",
     "tslint": "~5.11.0",
     "typescript": "~3.2.2"
-  }
+  },
+  "license": "MIT"
 }

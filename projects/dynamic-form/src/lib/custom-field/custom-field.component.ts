@@ -19,7 +19,6 @@ export class CustomFieldComponent implements OnInit {
     this.loadComponent();
   }
 
-
   loadComponent() {
     let componentFactory = this.componentFactoryResolver
                                 .resolveComponentFactory(this.control.component);

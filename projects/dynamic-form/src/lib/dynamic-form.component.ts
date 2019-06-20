@@ -6,7 +6,6 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  QueryList,
   ViewChildren
 } from '@angular/core';
 import { CheckboxControl } from '../models/CheckboxControl';
@@ -39,7 +38,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() controls: FormControlBase<any>[] = [];
   @Input() actions: IFormAction;
   @Output() submit = new EventEmitter<any>();
-  @ViewChildren('dynamicDropdown') dynamicDropdown !: QueryList<MatSelect>;
+  @ViewChildren('dynamicDropdown') dynamicDropdown !: any[];
 
   unsubscribe$ = new Subject<any>();
   form: FormGroup;

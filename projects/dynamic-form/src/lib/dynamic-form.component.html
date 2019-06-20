@@ -94,7 +94,7 @@
           [class.required]="control.isRequired"
           >{{ control.label }}</label
         >
-        <section [formArrayName]="control.key">
+        <section [formArrayName]="control.key" class="checkbox-section">
           <mat-checkbox
             *ngFor="let chk of form.get(control.key)['controls']; let i = index"
             [formControlName]="i"

@@ -19,7 +19,6 @@
     "javascript",
     "typescript"
   ],
-  "private": true,
   "dependencies": {
     "@angular/animations": "^7.2.15",
     "@angular/cdk": "^7.3.7",

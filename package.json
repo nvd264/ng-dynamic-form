@@ -1,5 +1,5 @@
 {
-  "name": "ng-dynamic-form",
+  "name": "@nvd264/ng-dynamic-form",
   "version": "1.0.0",
   "description": "A simple library for dynamic form to be use with Angular Material",
   "author": "Dong Nguyen",
@@ -61,5 +61,14 @@
     "tslint": "~5.11.0",
     "typescript": "~3.2.2"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nvd264/ng-dynamic-form.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nvd264/ng-dynamic-form/issues"
+  },
+  "homepage": "https://github.com/nvd264/ng-dynamic-form#readme"
 }
